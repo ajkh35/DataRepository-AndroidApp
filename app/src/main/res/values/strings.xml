@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">DataRepository</string>
+    <string name="welcome">Welcome To Data Repository</string>
+    <string name="placeholder_text">This is PlaceHolder Text.</string>
+    <string name="drawer_open">Drawer Open</string>
+    <string name="drawer_close">Drawer Close</string>
+    <string-array name="drawer_list">
+        <item>Home</item>
+        <item>Music</item>
+        <item>Movies</item>
+        <item>Games</item>
+        <item>Settings</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
