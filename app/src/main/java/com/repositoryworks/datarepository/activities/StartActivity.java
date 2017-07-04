@@ -1,6 +1,5 @@
 package com.repositoryworks.datarepository.activities;
 
-import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,19 +12,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.repositoryworks.datarepository.R;
+import com.repositoryworks.datarepository.activityAdapters.DrawerAdapter;
 import com.repositoryworks.datarepository.fragments.GamesFragment;
 import com.repositoryworks.datarepository.fragments.HomeFragment;
 import com.repositoryworks.datarepository.fragments.MoviesFragment;
@@ -38,7 +36,7 @@ import butterknife.ButterKnife;
 
 public class StartActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
             MusicFragment.OnFragmentInteractionListener, MoviesFragment.OnFragmentInteractionListener,
-            GamesFragment.OnFragmentInteractionListener{
+            GamesFragment.OnFragmentInteractionListener {
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -56,8 +54,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
     Toolbar mToolbar;
 
     private TextView mTitle;
-
-    private static DisplayMetrics mDisplayMetrics;
+    private static DisplayMetrics mDisplayMetrics = new DisplayMetrics();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +63,6 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         ButterKnife.bind(this);
 
         // Display width handy
-        mDisplayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
 
         // ActionBar stuff
@@ -91,8 +87,8 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         };
 
         // Prepare the List of contents for Drawer
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item,
-                mDrawerListItems));
+        DrawerAdapter DrawerAdapter = new DrawerAdapter(this);
+        mDrawerList.setAdapter(DrawerAdapter);
         mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
 
             @Override
@@ -127,9 +123,11 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
             // No content required
         }else{
             fragment = whichFragment(position);
-            Bundle bundle = new Bundle();
-            bundle.putInt(Constants.FRAGMENT_NUMBER,position);
-            if(fragment!=null) fragment.setArguments(bundle);
+            if(fragment != null){
+                Bundle bundle = new Bundle();
+                bundle.putInt(Constants.FRAGMENT_NUMBER, position);
+                fragment.setArguments(bundle);
+            }
         }
 
         if(fragment != null){
@@ -210,6 +208,5 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
     }
 }

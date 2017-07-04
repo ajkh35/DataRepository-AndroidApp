@@ -4,14 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.repositoryworks.datarepository.R;
+import com.repositoryworks.datarepository.fragmentAdapters.HomeAdapter;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,17 +27,17 @@ import butterknife.BindView;
 public class HomeFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
+    private static final String ARG_PARAM2 = "ARG_PARAM2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private int FragmentNumber;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
-    @BindView(R.id.home_feed_recycler)
-    RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
+    private HomeAdapter mAdapter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -52,7 +55,7 @@ public class HomeFragment extends Fragment {
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(FRAGMENT_NUMBER, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -62,7 +65,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            FragmentNumber = getArguments().getInt(FRAGMENT_NUMBER);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -70,9 +73,17 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        mRecyclerView = ButterKnife.findById(view,R.id.home_feed_recycler);
+        mAdapter = new HomeAdapter(getContext());
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+
+        mRecyclerView.setLayoutManager(manager);
+        mRecyclerView.setAdapter(mAdapter);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
