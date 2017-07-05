@@ -5,9 +5,9 @@
     tools:context="com.repositoryworks.datarepository.fragments.MusicFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/music_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="music fragment" />
+        android:layout_height="match_parent" />
 
 </FrameLayout>

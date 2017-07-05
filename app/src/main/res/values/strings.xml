@@ -4,6 +4,11 @@
     <string name="placeholder_text">This is PlaceHolder Text.</string>
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
+    <string name="error_title">Error Page</string>
+    <string-array name="loginTitleArray">
+        <item>Login</item>
+        <item>Register</item>
+    </string-array>
     <string-array name="drawer_list">
         <item>Home</item>
         <item>Music</item>
@@ -15,4 +20,18 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="youtube">Play on YouTube</string>
+    <string name="fragment_error">Some mal-function may have occurred!</string>
+    <string name="relaunch">Re-Start Application</string>
+    <string name="email_label">E-Mail:</string>
+    <string name="email">E-Mail</string>
+    <string name="pass_label">Password:</string>
+    <string name="pass">Password</string>
+    <string name="login">Login</string>
+    <string name="signup">Sign Up</string>
+    <string name="first_name_label">First Name:</string>
+    <string name="first_name">First name</string>
+    <string name="last_name_label">Last Name:</string>
+    <string name="last_name">Last name</string>
+    <string name="user_name_label">User Name:</string>
+    <string name="user_name">User name</string>
 </resources>

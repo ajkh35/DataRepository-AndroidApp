@@ -2,11 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.repositoryworks.datarepository.fragments.HomeFragment">
+    tools:context="com.repositoryworks.datarepository.fragments.HomeFragment"
+    android:background="@color/colorPrimaryDark">
 
     <!-- TODO: Update blank fragment layout -->
     <android.support.v7.widget.RecyclerView
+        android:layout_margin="@dimen/dp_2"
         android:id="@+id/home_feed_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 </FrameLayout>

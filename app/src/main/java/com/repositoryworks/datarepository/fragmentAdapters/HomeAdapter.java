@@ -54,7 +54,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if(holder instanceof FeedViewHolder){
             ((FeedViewHolder) holder).mTitle.setText(mList.get(position).getTitle());
             ((FeedViewHolder) holder).mCredits.setText(mList.get(position).getCredits());
-            ((FeedViewHolder) holder).mRelease.setText(mList.get(position).getRelease());
+            ((FeedViewHolder) holder).mRelease.setText(String.valueOf(mList.get(position).getRelease()));
             ((FeedViewHolder) holder).mYoutubeID.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -124,12 +124,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ArrayList<HomeModel> list = new ArrayList<>();
 
         for(int i=1;i<=20;i++){
-            HomeModel model = new HomeModel();
-            model.setTitle("Title #"+i);
-            model.setCredits("Guy #"+i);
-            model.setRelease("Year #"+i);
-            model.setYoutubeID("ID");
-            list.add(model);
+            list.add(new HomeModel("Title #"+i,"Guy #"+i,i,"ID"));
         }
 
         return list;

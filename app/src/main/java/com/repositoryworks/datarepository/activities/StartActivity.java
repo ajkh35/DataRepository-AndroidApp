@@ -28,6 +28,7 @@ import com.repositoryworks.datarepository.fragments.GamesFragment;
 import com.repositoryworks.datarepository.fragments.HomeFragment;
 import com.repositoryworks.datarepository.fragments.MoviesFragment;
 import com.repositoryworks.datarepository.fragments.MusicFragment;
+import com.repositoryworks.datarepository.fragments.PlaceHolderFragment;
 import com.repositoryworks.datarepository.utils.Constants;
 
 import butterknife.BindArray;
@@ -36,7 +37,7 @@ import butterknife.ButterKnife;
 
 public class StartActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
             MusicFragment.OnFragmentInteractionListener, MoviesFragment.OnFragmentInteractionListener,
-            GamesFragment.OnFragmentInteractionListener {
+            GamesFragment.OnFragmentInteractionListener, PlaceHolderFragment.OnFragmentInteractionListener {
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -141,7 +142,20 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
             mTitle.setText(mDrawerListItems[position]);
             mDrawerLayout.closeDrawer(mDrawerList);
         }else{
-            Toast.makeText(this,"Could not load the screen",Toast.LENGTH_SHORT).show();
+            fragment = new PlaceHolderFragment();
+
+            // Remove back stack fragments
+            fragmentManager = getSupportFragmentManager();
+            for(int i=0; i<fragmentManager.getBackStackEntryCount();++i){
+                fragmentManager.popBackStack();
+            }
+
+            // Show the helper fragment
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame,fragment)
+                    .commit();
+            mTitle.setText(getResources().getString(R.string.error_title));
+            mDrawerLayout.closeDrawer(mDrawerList);
         }
     }
 

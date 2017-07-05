@@ -8,8 +8,15 @@ public class HomeModel {
 
     private String Title;
     private String Credits;
-    private String Release;
+    private int Release;
     private String YoutubeID;
+
+    public HomeModel(String title, String credits, int release, String youtubeid){
+        this.Title = title;
+        this.Credits = credits;
+        this.Release = release;
+        this.YoutubeID = youtubeid;
+    }
 
     public String getTitle() {
         return Title;
@@ -27,11 +34,11 @@ public class HomeModel {
         Credits = credits;
     }
 
-    public String getRelease() {
+    public int getRelease() {
         return Release;
     }
 
-    public void setRelease(String release) {
+    public void setRelease(int release) {
         Release = release;
     }
 
