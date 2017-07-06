@@ -29,14 +29,7 @@ public class LoginPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         Fragment fragment = getFragment(position);
-        if(fragment != null){
-            Bundle bundle = new Bundle();
-            bundle.putInt(Constants.FRAGMENT_NUMBER,position);
-            fragment.setArguments(bundle);
-        }else{
-            fragment = new PlaceHolderFragment();
-        }
-        return fragment;
+        return (fragment != null) ? fragment : new PlaceHolderFragment();
     }
 
     @Override
@@ -49,13 +42,19 @@ public class LoginPagerAdapter extends FragmentPagerAdapter {
         return mTitleArray[position];
     }
 
+    /**
+     * Get fragment instance by it's position
+     *
+     * @param position
+     * @return
+     */
     @Nullable
     private Fragment getFragment(int position){
         switch(position){
             case 0:
-                return new LoginFragment();
+                return LoginFragment.newInstance(position);
             case 1:
-                return new RegisterFragment();
+                return RegisterFragment.newInstance(position);
             default:
                 return null;
         }

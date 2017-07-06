@@ -2,9 +2,11 @@ package com.repositoryworks.datarepository.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,32 +16,30 @@ import android.widget.Toast;
 
 import com.repositoryworks.datarepository.R;
 import com.repositoryworks.datarepository.activities.StartActivity;
+import com.repositoryworks.datarepository.models.UserModel;
+import com.repositoryworks.datarepository.utils.Constants;
+import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
+
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.jetbrains.annotations.Contract;
+
+import java.security.NoSuchAlgorithmException;
 
 import butterknife.ButterKnife;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link LoginFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class LoginFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private int FragmentNumber;
-    private String mParam2;
-
     private OnFragmentInteractionListener mListener;
 
     private EditText mEmail;
     private EditText mPassword;
-    private Button mLogin;
+    private DBManager mDBManager;
+
+    // Set SharedPreferences
+    private SharedPreferences mPreferences;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -50,15 +50,12 @@ public class LoginFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment LoginFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
+    public static LoginFragment newInstance(int param1) {
         LoginFragment fragment = new LoginFragment();
         Bundle args = new Bundle();
-        args.putString(FRAGMENT_NUMBER, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(FRAGMENT_NUMBER, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,36 +65,81 @@ public class LoginFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             FragmentNumber = getArguments().getInt(FRAGMENT_NUMBER);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            Log.i("Fragment number",String.valueOf(FragmentNumber));
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+
+        // Inject Views
         mEmail = ButterKnife.findById(view,R.id.email);
         mPassword = ButterKnife.findById(view,R.id.pass);
-        mLogin = ButterKnife.findById(view,R.id.login);
+        Button Login = ButterKnife.findById(view,R.id.login);
 
-        mLogin.setOnClickListener(new View.OnClickListener() {
+        // Set SharedPreferences
+        mPreferences = getActivity().getSharedPreferences(Constants.APP_ACTIVITIES,Context.MODE_PRIVATE);
+
+        // Link the database
+        mDBManager = callDBManager();
+        mDBManager.databaseOpenToRead();
+
+        Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mEmail.getText().toString().equals("admin") &&
-                        mPassword.getText().toString().equals("admin")){
-                    Intent intent = new Intent(getActivity(), StartActivity.class);
-                    startActivity(intent);
-                    getActivity().finish();
-                }else{
-                    Toast.makeText(getContext(),"Wrong Details",Toast.LENGTH_SHORT).show();
+                if(validateForm()){
+                    try {
+                        if(mDBManager.validateUser(mEmail.getText().toString(),mPassword.getText().toString())){
+                            Toast.makeText(getContext(),"Logging in...",Toast.LENGTH_SHORT).show();
+                            mPreferences.edit().putBoolean(Constants.IS_LOGGED_IN,true).apply();
+                            Intent intent = new Intent(getActivity(), StartActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            getActivity().finish();
+                        }else{
+                            Toast.makeText(getContext(),"Wrong Details",Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    /**
+     * Validate form fields
+     * @return True if correct field entries
+     */
+    @Contract(pure = true)
+    private boolean validateForm(){
+
+        if(mEmail.getText().toString().isEmpty()){
+            mEmail.setError(getString(R.string.blank));
+            return false;
+        }
+
+        if(mPassword.getText().toString().isEmpty()){
+            mPassword.setError(getString(R.string.blank));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Method to access the database
+     */
+    @Contract(" -> !null")
+    private DBManager callDBManager(){
+        return new DBManager(getContext());
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -119,6 +161,12 @@ public class LoginFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        mDBManager.databaseClose();
+        super.onDestroy();
     }
 
     /**

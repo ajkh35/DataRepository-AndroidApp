@@ -1,12 +1,15 @@
 package com.repositoryworks.datarepository;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.repositoryworks.datarepository.activities.LoginActivity;
 import com.repositoryworks.datarepository.activities.StartActivity;
+import com.repositoryworks.datarepository.utils.Constants;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,7 +20,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final SharedPreferences PackagePreferences =
+                getSharedPreferences(Constants.APP_PACKAGE,MODE_PRIVATE);
+
+        final SharedPreferences ActivityPreferences =
+                getSharedPreferences(Constants.APP_ACTIVITIES,MODE_PRIVATE);
+
         new AsyncTask<Void,Void,Void>(){
+
+            boolean first_run;
+
+            @Override
+            protected void onPreExecute() {
+                first_run = PackagePreferences.getBoolean("first run",true);
+                super.onPreExecute();
+            }
 
             @Override
             protected Void doInBackground(Void... params) {
@@ -31,7 +48,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                mIntent = new Intent(MainActivity.this,LoginActivity.class);
+                if(ActivityPreferences.getBoolean(Constants.IS_LOGGED_IN,false)){
+                    mIntent = new Intent(MainActivity.this, StartActivity.class);
+                }else{
+                    mIntent = new Intent(MainActivity.this,LoginActivity.class);
+                }
+
+                if(first_run){
+                    mIntent.putExtra(Constants.LOGIN_FRAGMENT_POSITION,1);
+                    PackagePreferences.edit().putBoolean("first run",false).apply();
+                }else{
+                    mIntent.putExtra(Constants.LOGIN_FRAGMENT_POSITION,0);
+                }
+
                 mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(mIntent);
                 finish();

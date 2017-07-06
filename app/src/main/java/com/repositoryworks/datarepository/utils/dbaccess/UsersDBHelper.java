@@ -10,8 +10,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 class UsersDBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "User.db";
+    private static final int DATABASE_VERSION = 2;
+    private static final String DATABASE_NAME = "DataRepository.db";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + UsersContract.User.TABLE_NAME + " (" +
                     UsersContract.User._ID + " INTEGER PRIMARY KEY," +

@@ -1,5 +1,8 @@
 package com.repositoryworks.datarepository.activities;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,6 +11,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -56,6 +60,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
     private TextView mTitle;
     private static DisplayMetrics mDisplayMetrics = new DisplayMetrics();
+    public static SharedPreferences sSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,9 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
         // Display width handy
         getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
+
+        // Get SharedPreferences
+        sSharedPreferences = getSharedPreferences(Constants.APP_ACTIVITIES,MODE_PRIVATE);
 
         // ActionBar stuff
         setActionBar();
@@ -94,7 +102,11 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                loadFragment(position);
+                if(((TextView) view).getText().toString().equals(getString(R.string.log_out))){
+                    viewAlertDialog();
+                }else{
+                    loadFragment(position);
+                }
             }
         });
 
@@ -111,6 +123,20 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         });
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus){
+            boolean logged_in = sSharedPreferences.getBoolean(Constants.IS_LOGGED_IN,false);
+            if(!logged_in){
+                Intent intent = new Intent(this,LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }
+        }
+    }
+
     /**
      * Load the fragment chosen from Drawer menu
      * @param position
@@ -124,11 +150,6 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
             // No content required
         }else{
             fragment = whichFragment(position);
-            if(fragment != null){
-                Bundle bundle = new Bundle();
-                bundle.putInt(Constants.FRAGMENT_NUMBER, position);
-                fragment.setArguments(bundle);
-            }
         }
 
         if(fragment != null){
@@ -144,7 +165,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         }else{
             fragment = new PlaceHolderFragment();
 
-            // Remove back stack fragments
+            // Pop BackStack fragments
             fragmentManager = getSupportFragmentManager();
             for(int i=0; i<fragmentManager.getBackStackEntryCount();++i){
                 fragmentManager.popBackStack();
@@ -162,20 +183,20 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
     /**
      * Find the fragment to load when loading for the first time
      * @param position
-     * @return
+     * @return Fragment instance
      */
     @Nullable
     @org.jetbrains.annotations.Contract(pure = true)
     private Fragment whichFragment(int position){
         switch(mDrawerListItems[position]){
             case "Home":
-                return new HomeFragment();
+                return HomeFragment.newInstance(position);
             case "Music":
-                return new MusicFragment();
+                return MusicFragment.newInstance(position);
             case "Movies":
-                return new MoviesFragment();
+                return MoviesFragment.newInstance(position);
             case "Games":
-                return new GamesFragment();
+                return GamesFragment.newInstance(position);
             case "Settings":
                 return null;
             default:
@@ -197,6 +218,33 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                 GravityCompat.RELATIVE_HORIZONTAL_GRAVITY_MASK
         ));
         mTitle = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.action_bar_title);
+    }
+
+    /**
+     * Alert Dialog to log out
+     */
+    private void viewAlertDialog(){
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle(getString(R.string.confirmation));
+        alert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sSharedPreferences.edit().clear().apply();
+                dialog.dismiss();
+            }
+        });
+        alert.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        // create and show
+        alert.create();
+        alert.show();
     }
 
     @Override

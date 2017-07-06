@@ -10,6 +10,7 @@ import android.util.TypedValue;
 
 import com.repositoryworks.datarepository.R;
 import com.repositoryworks.datarepository.activityAdapters.LoginPagerAdapter;
+import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.animators.DepthPageTransformer;
 import com.repositoryworks.datarepository.fragments.LoginFragment;
 import com.repositoryworks.datarepository.fragments.PlaceHolderFragment;
@@ -27,20 +28,21 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
     @BindView(R.id.title_strip)
     PagerTabStrip mTitleStrip;
 
-    private LoginPagerAdapter mPageAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        mPageAdapter = new LoginPagerAdapter(this,getSupportFragmentManager());
+        LoginPagerAdapter PageAdapter = new LoginPagerAdapter(this,getSupportFragmentManager());
+
         mTitleStrip.setTextSize(TypedValue.COMPLEX_UNIT_DIP,22);
         mTitleStrip.setTextColor(Color.WHITE);
         mTitleStrip.setTabIndicatorColor(Color.WHITE);
-        mPager.setAdapter(mPageAdapter);
+
+        mPager.setAdapter(PageAdapter);
         mPager.setPageTransformer(true,new DepthPageTransformer());
+        mPager.setCurrentItem(getIntent().getIntExtra(Constants.LOGIN_FRAGMENT_POSITION,0));
     }
 
     @Override

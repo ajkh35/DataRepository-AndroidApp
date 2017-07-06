@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,23 +17,11 @@ import com.repositoryworks.datarepository.fragmentAdapters.HomeAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link HomeFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class HomeFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
-    private static final String ARG_PARAM2 = "ARG_PARAM2";
 
-    // TODO: Rename and change types of parameters
+    private static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
+
     private int FragmentNumber;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -48,15 +37,12 @@ public class HomeFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment HomeFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
+    public static HomeFragment newInstance(int param1) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
-        args.putString(FRAGMENT_NUMBER, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(FRAGMENT_NUMBER, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,7 +52,7 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             FragmentNumber = getArguments().getInt(FRAGMENT_NUMBER);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            Log.i("Fragment number",String.valueOf(FragmentNumber));
         }
     }
 
@@ -86,7 +72,6 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -121,7 +106,6 @@ public class HomeFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

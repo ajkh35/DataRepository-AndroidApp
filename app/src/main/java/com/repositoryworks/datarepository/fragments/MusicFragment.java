@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,23 +16,11 @@ import com.repositoryworks.datarepository.fragmentAdapters.MusicAdapter;
 
 import butterknife.ButterKnife;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MusicFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MusicFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MusicFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
-    private static final String ARG_PARAM2 = "ARG_PARAM2";
 
-    // TODO: Rename and change types of parameters
+    private static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
+
     private int FragmentNumber;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -50,12 +39,10 @@ public class MusicFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment MusicFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static MusicFragment newInstance(String param1, String param2) {
+    public static MusicFragment newInstance(int param1) {
         MusicFragment fragment = new MusicFragment();
         Bundle args = new Bundle();
-        args.putString(FRAGMENT_NUMBER, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(FRAGMENT_NUMBER, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,7 +52,7 @@ public class MusicFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             FragmentNumber = getArguments().getInt(FRAGMENT_NUMBER);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            Log.i("Fragment number",String.valueOf(FragmentNumber));
         }
     }
 
@@ -84,7 +71,6 @@ public class MusicFragment extends Fragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

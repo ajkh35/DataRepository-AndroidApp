@@ -5,6 +5,13 @@
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
     <string name="error_title">Error Page</string>
+    <string name="EMAIL_ERROR">Invalid email</string>
+    <string name="REQUIRED_FIELD">Required field</string>
+    <string name="FIELD_SHORT">Too short</string>
+    <string name="log_out">Log Out</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="confirmation">Are You Sure?</string>
     <string-array name="loginTitleArray">
         <item>Login</item>
         <item>Register</item>
@@ -15,6 +22,7 @@
         <item>Movies</item>
         <item>Games</item>
         <item>Settings</item>
+        <item>Log Out</item>
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -34,4 +42,5 @@
     <string name="last_name">Last name</string>
     <string name="user_name_label">User Name:</string>
     <string name="user_name">User name</string>
+    <string name="blank">Can\'t be blank</string>
 </resources>

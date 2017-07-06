@@ -4,29 +4,18 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.repositoryworks.datarepository.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MoviesFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MoviesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MoviesFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
-    private static final String ARG_PARAM2 = "ARG_PARAM2";
 
-    // TODO: Rename and change types of parameters
+    private static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
+
     private int FragmentNumber;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -42,12 +31,10 @@ public class MoviesFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment MoviesFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static MoviesFragment newInstance(String param1, String param2) {
+    public static MoviesFragment newInstance(int param1) {
         MoviesFragment fragment = new MoviesFragment();
         Bundle args = new Bundle();
-        args.putString(FRAGMENT_NUMBER, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(FRAGMENT_NUMBER, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,7 +44,7 @@ public class MoviesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             FragmentNumber = getArguments().getInt(FRAGMENT_NUMBER);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            Log.i("Fragment number",String.valueOf(FragmentNumber));
         }
     }
 
@@ -68,7 +55,6 @@ public class MoviesFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_movies, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
