@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
@@ -17,24 +18,46 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimaryDark"
-            android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <FrameLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"/>
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <ListView android:id="@+id/left_drawer"
-        android:layout_width="240dp"
+    <LinearLayout
+        android:id="@+id/left_drawer"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="@dimen/dp_5"
-        android:background="@color/colorPrimary"/>
+        android:background="@color/colorPrimaryDark" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0"
+            android:layout_weight="0.3">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_pic"
+                android:layout_centerInParent="true"
+                android:layout_width="@dimen/dp_150"
+                android:layout_height="@dimen/dp_150"
+                android:src="@drawable/ic_account_circle_white_48dp"
+                app:civ_border_width="@dimen/dp_2"
+                app:civ_border_color="@android:color/white" />
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/drawer_list_view"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_0"
+            android:layout_weight="0.7"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="@dimen/dp_1"/>
+    </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

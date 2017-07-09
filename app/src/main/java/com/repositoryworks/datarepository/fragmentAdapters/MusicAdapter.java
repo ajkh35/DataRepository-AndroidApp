@@ -65,7 +65,7 @@ public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((MusicViewHolder) holder).mCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext,"Card #"+holder.getAdapterPosition(),
+                    Toast.makeText(mContext,"Card #"+(holder.getAdapterPosition()+1),
                             Toast.LENGTH_SHORT).show();
                 }
             });
@@ -128,7 +128,7 @@ public class MusicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     private ArrayList<MusicModel> generateList(){
         ArrayList<MusicModel> list = new ArrayList<>();
-        for(int i=1;i<21;i++){
+        for(int i=1;i<11;i++){
             list.add(new MusicModel("Title #"+i,"Artist #"+i,"Album #"+i,i,"ID"));
         }
         return list;

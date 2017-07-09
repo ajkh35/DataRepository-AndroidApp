@@ -1,11 +1,19 @@
 package com.repositoryworks.datarepository.fragments;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -17,17 +25,20 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.repositoryworks.datarepository.R;
+import com.repositoryworks.datarepository.activities.LoginActivity;
 import com.repositoryworks.datarepository.activities.StartActivity;
 import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
-import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
+import com.repositoryworks.datarepository.utils.fileUtils.FileUtilities;
 
-import org.jetbrains.annotations.Contract;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterFragment extends Fragment {
 
@@ -41,7 +52,12 @@ public class RegisterFragment extends Fragment {
     private EditText mFirstName;
     private EditText mLastName;
     private EditText mPassword;
-    private DBManager mDBManager;
+    private CircleImageView mImageChooser;
+    private String mImagePath="";
+    private String mStoragePath="";
+    private String mExternalStoragePath="";
+    private final int FILE_REQUEST_CODE = 100;
+    private final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 4;
 
     // Set SharedPreferences
     private SharedPreferences mPreferences;
@@ -88,9 +104,14 @@ public class RegisterFragment extends Fragment {
         mUserName = ButterKnife.findById(view,R.id.user_name);
         mEmail = ButterKnife.findById(view,R.id.email);
         mPassword = ButterKnife.findById(view,R.id.pass);
+        mImageChooser = ButterKnife.findById(view,R.id.add_image);
 
         // Set SharedPreferences
         mPreferences = getActivity().getSharedPreferences(Constants.APP_ACTIVITIES,Context.MODE_PRIVATE);
+
+        // Set storage path variables
+        mStoragePath = Constants.getInternalStoragePath(getContext());
+        mExternalStoragePath = Constants.getExternalStoragePath();
 
         // Set the listeners to views
         mEmail.addTextChangedListener(new TextWatcher() {
@@ -141,25 +162,49 @@ public class RegisterFragment extends Fragment {
 
             }
         });
-
-        // Link to the database
-        mDBManager = callDBManager();
-        mDBManager.databaseOpenToRead();
+        mImageChooser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!checkReadPermission(getContext())){
+                    requestReadPermissions();
+                }else{
+                    Log.i(Constants.APP_TAG,getString(R.string.log_has_permission));
+                    launchFileChooser();
+                }
+            }
+        });
 
         // SignUp button listeners
         SignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(validateForm()){
-
                     // Assign data to user model
                     mUserModel = new UserModel(mFirstName.getText().toString(),mLastName.getText().toString(),
-                            mUserName.getText().toString(), mEmail.getText().toString(), mPassword.getText().toString());
-                    try {
-                        checkDatabase(mEmail.getText().toString(), mUserName.getText().toString());
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    }
+                            mUserName.getText().toString(), mEmail.getText().toString(),
+                            mPassword.getText().toString(),mImagePath);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if(checkDatabase(mEmail.getText().toString(), mUserName.getText().toString())){
+                                    saveUserToDatabase();
+
+                                    // Go to StartActivity
+                                    Intent intent = new Intent(getActivity(), StartActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                    getActivity().finish();
+
+                                }else{
+                                    // Do Nothing
+                                }
+                            } catch (NoSuchAlgorithmException|IOException|ExecutionException|InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -255,44 +300,194 @@ public class RegisterFragment extends Fragment {
      * @param email
      * @param user_name
      */
-    private void checkDatabase(String email, String user_name) throws NoSuchAlgorithmException {
+    private boolean checkDatabase(final String email,final String user_name)
+            throws NoSuchAlgorithmException, IOException, ExecutionException, InterruptedException {
 
-        if(mDBManager.checkForUser(email,user_name)){
-            Toast.makeText(getContext(),"User Exists",Toast.LENGTH_SHORT).show();
+        LoginActivity.sDBManager.databaseOpenToRead();
+        if(LoginActivity.sDBManager.checkForUser(email,user_name)){
+            Toast.makeText(getContext(),getString(R.string.user_exists),Toast.LENGTH_SHORT).show();
             mUserName.setError("Change UserName");
             mEmail.setError("Change Email");
+            return false;
         }else{
-            Toast.makeText(getContext(),"User does not exist",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),getString(R.string.registering),Toast.LENGTH_SHORT).show();
             mUserName.setError(null);
             mEmail.setError(null);
-
-            // Add record to database
-            mDBManager.databaseClose();
-            mDBManager.databaseOpenToWrite();
-            long id = mDBManager.createUser(mUserModel);
-            Log.i("Record created ID",String.valueOf(id));
-            mPreferences.edit().putBoolean(Constants.IS_LOGGED_IN,true).apply();
-
-            // Go to StartActivity
-            Intent intent = new Intent(getActivity(), StartActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            getActivity().finish();
+            return true;
         }
     }
 
     /**
-     * Method to access the database
+     * Save the user to database
+     *
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
-    @Contract(" -> !null")
-    private DBManager callDBManager(){
-        return new DBManager(getContext());
+    private void saveUserToDatabase() throws ExecutionException, InterruptedException, IOException, NoSuchAlgorithmException {
+
+        LoginActivity.sDBManager.databaseOpenToWrite();
+        long id = LoginActivity.sDBManager.createUser(mUserModel);
+        Log.i(Constants.APP_TAG,getString(R.string.log_user_created)+String.valueOf(id));
+
+        // set shared preferences
+        mPreferences.edit().putBoolean(Constants.IS_LOGGED_IN,true).apply();
+        mPreferences.edit().putLong(Constants.CURRENT_USER_ID,id).apply();
     }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+    /**
+     * Show the FileChooser
+     */
+    private void launchFileChooser(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(Intent.createChooser(intent,getString(R.string.select_file)),FILE_REQUEST_CODE);
+    }
+
+    /**
+     * Set the Image Path
+     */
+    private void setImagePath(Uri uri) throws IOException {
+//        if(uri.getPath().contains(mExternalStoragePath)){
+//            Log.i(Constants.APP_TAG,"External storage path"+mExternalStoragePath);
+//            if(!(mImagePath = FileUtilities.getFilePath(getContext(),uri,mExternalStoragePath))
+//                    .equals(getString(R.string.no_result))){
+//                Log.i(Constants.APP_TAG,mImagePath);
+//            }else{
+//                Toast.makeText(getContext(),getString(R.string.image_error),Toast.LENGTH_SHORT).show();
+//            }
+//        }else{
+//            Log.i(Constants.APP_TAG,"Internal storage path"+mStoragePath);
+//            if(!(mImagePath = FileUtilities.getFilePath(getContext(),uri,mStoragePath)).equals(getString(R.string.no_result))){
+//                Log.i(Constants.APP_TAG,mImagePath);
+//                mImageChooser.setImageBitmap(FileUtilities.getImageBitmap(FileUtilities.getFileBytes(mImagePath)));
+//            }else{
+//                Toast.makeText(getContext(),getString(R.string.image_error),Toast.LENGTH_SHORT).show();
+//            }
+//        }
+        if(!(mImagePath = FileUtilities.getFilePath(getContext(),uri))
+                .equals(getString(R.string.no_result))){
+
+            Log.i(Constants.APP_TAG,mImagePath);
+            mImageChooser.setImageURI(uri);
+        }else{
+            mImagePath="";
+            Toast.makeText(getContext(),getString(R.string.image_error),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode){
+
+            case FILE_REQUEST_CODE:
+                if(resultCode == LoginActivity.RESULT_OK){
+                    Uri uri = data.getData();
+                    Log.i(Constants.APP_TAG,uri.toString());
+                    String mimeType = getContext().getContentResolver().getType(uri);
+
+                    if(mimeType != null){
+                        if(mimeType.equals("image/jpeg") || mimeType.equals("image/png")){
+                            Log.i(Constants.APP_TAG,mimeType);
+                            try {
+                                setImagePath(uri);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+                            Toast.makeText(getContext(),getString(R.string.select_image_file), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                    }else {
+                        Toast.makeText(getContext(),getString(R.string.internal_error),Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                }else{
+                    Toast.makeText(getContext(),getString(R.string.file_chooser_error),
+                            Toast.LENGTH_SHORT).show();
+                }
+            break;
+
+            default: break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * Check for read external storage permission
+     *
+     * @return return if has permission
+     */
+    private boolean checkReadPermission(Context context){
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Request for read permissions from the user
+     */
+    private void requestReadPermissions(){
+        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch(requestCode){
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
+
+                if(grantResults.length > 0){
+
+                    if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                        Log.i(Constants.APP_TAG,getString(R.string.log_got_permissions));
+                        launchFileChooser();
+
+                    }else if(grantResults[0] == PackageManager.PERMISSION_DENIED){
+
+                        if(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                                    alert.setTitle(getString(R.string.read_permission));
+                                    alert.setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                    alert.show();
+                                }
+                            }.run();
+
+                        }else{
+                            mImageChooser.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Toast.makeText(getContext(),getString(R.string.disabled_image),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                    return;
+
+                }else{
+                    Toast.makeText(getContext(),getString(R.string.no_permission),Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            default: break;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -310,12 +505,6 @@ public class RegisterFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public void onDestroy() {
-        mDBManager.databaseClose();
-        super.onDestroy();
     }
 
     /**

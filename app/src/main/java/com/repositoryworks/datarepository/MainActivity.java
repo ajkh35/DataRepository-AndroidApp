@@ -1,24 +1,29 @@
 package com.repositoryworks.datarepository;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 
 import com.repositoryworks.datarepository.activities.LoginActivity;
 import com.repositoryworks.datarepository.activities.StartActivity;
 import com.repositoryworks.datarepository.utils.Constants;
+import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 
 public class MainActivity extends AppCompatActivity {
 
     Intent mIntent;
+    public static final DisplayMetrics sDisplayMetrics = new DisplayMetrics();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Display width handy
+        getWindowManager().getDefaultDisplay().getMetrics(sDisplayMetrics);
 
         final SharedPreferences PackagePreferences =
                 getSharedPreferences(Constants.APP_PACKAGE,MODE_PRIVATE);

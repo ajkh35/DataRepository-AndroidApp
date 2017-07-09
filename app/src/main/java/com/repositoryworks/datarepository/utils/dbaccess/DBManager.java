@@ -6,18 +6,18 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.repositoryworks.datarepository.models.UserModel;
+import com.repositoryworks.datarepository.utils.Constants;
+import com.repositoryworks.datarepository.utils.fileUtils.FileUtilities;
 
 import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.Contract;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-
-import javax.xml.datatype.DatatypeFactory;
 
 /**
  * Created by ajay3 on 7/6/2017.
@@ -31,7 +31,7 @@ public class DBManager {
 
     public DBManager(Context context) {
         mContext = context;
-        mDBHelper = new UsersDBHelper(context);
+        mDBHelper = UsersDBHelper.getInstance(context);
     }
 
     /**
@@ -62,13 +62,22 @@ public class DBManager {
      * @param model
      * @return ID of user added
      */
-    public long createUser(UserModel model) throws NoSuchAlgorithmException {
+    public long createUser(UserModel model) throws NoSuchAlgorithmException,IOException {
         ContentValues values = new ContentValues();
+
         values.put(UsersContract.User.COLUMN_NAME_FIRST_NAME,model.getFirstName());
         values.put(UsersContract.User.COLUMN_NAME_LAST_NAME,model.getLastName());
         values.put(UsersContract.User.COLUMN_NAME_USER_NAME,model.getUserName());
         values.put(UsersContract.User.COLUMN_NAME_EMAIL,model.getEmail());
         values.put(UsersContract.User.COLUMN_NAME_PASSWORD,getMD5(model.getPassword()));
+
+        byte[] image = FileUtilities.getFileBytes(model.getProfilePic());
+
+        if(image != null){
+            values.put(UsersContract.User.COLUMN_NAME_IMAGE,image);
+        }else{
+            values.put(UsersContract.User.COLUMN_NAME_IMAGE,Constants.getDefaultImage(mContext));
+        }
 
         return mDatabase.insert(UsersContract.User.TABLE_NAME,null,values);
     }
@@ -82,21 +91,54 @@ public class DBManager {
 
         String selection = UsersContract.User._ID + " LIKE ?";
         String[] selectionArgs = {String.valueOf(id)};
-        return mDatabase.delete(UsersContract.User.TABLE_NAME,selection,selectionArgs);
+
+        mDatabase.beginTransaction();
+        id = mDatabase.delete(UsersContract.User.TABLE_NAME,selection,selectionArgs);
+
+        mDatabase.setTransactionSuccessful();
+        mDatabase.close();
+
+        return id;
+    }
+
+    /**
+     * Update user by ID
+     * @param id
+     * @return returns true on success
+     */
+    public boolean updateUserImageByID(String imgPath,long id) throws IOException {
+
+        int count = -1;
+        byte[] image = FileUtilities.getFileBytes(imgPath);
+
+        if(image != null){
+            ContentValues values = new ContentValues();
+            values.put(UsersContract.User.COLUMN_NAME_IMAGE,image);
+            String where = UsersContract.User._ID+ "=?";
+            String[] whereArgs = {String.valueOf(id)};
+
+            count = mDatabase.update(UsersContract.User.TABLE_NAME,values,where,whereArgs);
+        }else{}
+
+        return count==1;
     }
 
     /**
      * Delete all users from the database
      */
     public void deleteAllUsers(){
+        mDatabase.beginTransaction();
         mDatabase.delete(UsersContract.User.TABLE_NAME,null,null);
+
+        mDatabase.setTransactionSuccessful();
+        mDatabase.close();
     }
 
     /**
-     * Find a user record from the database
+     * Checks if user exists to prevent SignUp duplicity
      * @param email
      * @param user_name
-     * @return Checks if user exists and returns the answer to Register screen
+     * @return returns the answer to Register screen
      */
     public boolean checkForUser(String email, String user_name){
 
@@ -131,7 +173,7 @@ public class DBManager {
     }
 
     /**
-     * Validate user before login
+     * LOGIN validation to check if details are correct
      *
      * @param email
      * @param password
@@ -181,7 +223,8 @@ public class DBManager {
                 UsersContract.User.COLUMN_NAME_LAST_NAME,
                 UsersContract.User.COLUMN_NAME_USER_NAME,
                 UsersContract.User.COLUMN_NAME_EMAIL,
-                UsersContract.User.COLUMN_NAME_PASSWORD
+                UsersContract.User.COLUMN_NAME_PASSWORD,
+                UsersContract.User.COLUMN_NAME_IMAGE
         };
 
         Cursor cursor = mDatabase.query(UsersContract.User.TABLE_NAME,projection,null,null,null,null,null);
@@ -189,12 +232,15 @@ public class DBManager {
         if(cursor != null){
             cursor.moveToFirst();
             do{
-                UserModel model = new UserModel("","","","","");
+                UserModel model = new UserModel("","","","","","");
                 model.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_EMAIL)));
                 model.setFirstName(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_FIRST_NAME)));
                 model.setLastName(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_LAST_NAME)));
                 model.setUserName(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_USER_NAME)));
                 model.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_PASSWORD)));
+                model.setImageBitmap(FileUtilities.getImageBitmap(
+                        cursor.getBlob(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_IMAGE))
+                ));
                 list.add(model);
             }while (cursor.moveToNext());
             cursor.close();
@@ -209,14 +255,15 @@ public class DBManager {
      * @return UserModel of the user
      */
     public UserModel findUserByID(long id){
-        UserModel model = new UserModel("","","","","");
+        UserModel model = new UserModel("","","","","","");
 
         String[] projection = {
                 UsersContract.User.COLUMN_NAME_FIRST_NAME,
                 UsersContract.User.COLUMN_NAME_LAST_NAME,
                 UsersContract.User.COLUMN_NAME_USER_NAME,
                 UsersContract.User.COLUMN_NAME_EMAIL,
-                UsersContract.User.COLUMN_NAME_PASSWORD
+                UsersContract.User.COLUMN_NAME_PASSWORD,
+                UsersContract.User.COLUMN_NAME_IMAGE
         };
 
         String selection = UsersContract.User._ID+ " = ?";
@@ -237,10 +284,41 @@ public class DBManager {
             model.setUserName(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_USER_NAME)));
             model.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_PASSWORD)));
             model.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_EMAIL)));
+            model.setImageBitmap(FileUtilities.getImageBitmap(
+                    cursor.getBlob(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_IMAGE)))
+            );
             cursor.close();
         }
 
         return model;
+    }
+
+    /**
+     * Get the logged in user id
+     * @param email
+     * @return returns the ID long value
+     */
+    public long getUserIDAfterLogin(String email){
+        long id = 0;
+        String[] projection = {UsersContract.User._ID};
+        String where = UsersContract.User.COLUMN_NAME_EMAIL + " = ?";
+        String[] whereArgs = {email};
+
+        Cursor cursor = mDatabase.query(
+                UsersContract.User.TABLE_NAME,
+                projection,
+                where,
+                whereArgs,
+                null,null,null
+        );
+
+        if(cursor != null){
+            cursor.moveToFirst();
+            id = cursor.getLong(cursor.getColumnIndexOrThrow(UsersContract.User._ID));
+            cursor.close();
+        }
+
+        return id;
     }
 
     /**

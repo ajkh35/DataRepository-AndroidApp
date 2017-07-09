@@ -14,17 +14,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.repositoryworks.datarepository.MainActivity;
 import com.repositoryworks.datarepository.R;
+import com.repositoryworks.datarepository.activities.LoginActivity;
 import com.repositoryworks.datarepository.activities.StartActivity;
 import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.Contract;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 
@@ -36,7 +37,6 @@ public class LoginFragment extends Fragment {
 
     private EditText mEmail;
     private EditText mPassword;
-    private DBManager mDBManager;
 
     // Set SharedPreferences
     private SharedPreferences mPreferences;
@@ -85,23 +85,28 @@ public class LoginFragment extends Fragment {
         mPreferences = getActivity().getSharedPreferences(Constants.APP_ACTIVITIES,Context.MODE_PRIVATE);
 
         // Link the database
-        mDBManager = callDBManager();
-        mDBManager.databaseOpenToRead();
+        LoginActivity.sDBManager.databaseOpenToRead();
 
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(validateForm()){
                     try {
-                        if(mDBManager.validateUser(mEmail.getText().toString(),mPassword.getText().toString())){
-                            Toast.makeText(getContext(),"Logging in...",Toast.LENGTH_SHORT).show();
+                        if(LoginActivity.sDBManager.validateUser(mEmail.getText().toString(),mPassword.getText().toString())){
+                            Toast.makeText(getContext(),getString(R.string.logging_in),Toast.LENGTH_SHORT).show();
+
+                            // set shared preferences
                             mPreferences.edit().putBoolean(Constants.IS_LOGGED_IN,true).apply();
-                            Intent intent = new Intent(getActivity(), StartActivity.class);
+                            mPreferences.edit().putLong(Constants.CURRENT_USER_ID,
+                                    LoginActivity.sDBManager.getUserIDAfterLogin(mEmail.getText().toString())).apply();
+
+                            // Go to StartActivity
+                            Intent intent = new Intent(getActivity(),StartActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             getActivity().finish();
                         }else{
-                            Toast.makeText(getContext(),"Wrong Details",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),getString(R.string.wrong_details),Toast.LENGTH_SHORT).show();
                         }
                     } catch (NoSuchAlgorithmException e) {
                         e.printStackTrace();
@@ -132,14 +137,6 @@ public class LoginFragment extends Fragment {
         return true;
     }
 
-    /**
-     * Method to access the database
-     */
-    @Contract(" -> !null")
-    private DBManager callDBManager(){
-        return new DBManager(getContext());
-    }
-
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -161,12 +158,6 @@ public class LoginFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public void onDestroy() {
-        mDBManager.databaseClose();
-        super.onDestroy();
     }
 
     /**

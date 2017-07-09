@@ -10,143 +10,165 @@
         android:id="@+id/register_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_20"
         android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/add_image"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_0"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_gravity="center"
+            android:layout_weight="0.3"
+            android:src="@drawable/ic_account_circle_48pt_3x" />
 
         <TextView
             android:id="@+id/first_name_label"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_0"
             android:layout_gravity="left"
             android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_weight="0.05"
             android:labelFor="@+id/first_name"
             android:text="@string/first_name_label"
-            android:textSize="@dimen/sp_18"
-            android:textColor="@android:color/black"/>
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/sp_18" />
 
         <EditText
             android:id="@+id/first_name"
-            android:inputType="text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_0"
             android:layout_gravity="left"
             android:layout_marginLeft="@dimen/dp_10"
             android:layout_marginRight="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_5"
+            android:layout_weight="0.07"
             android:background="@drawable/edit_text_bg"
             android:hint="@string/first_name"
+            android:inputType="text"
             android:padding="@dimen/dp_5" />
 
         <TextView
             android:id="@+id/last_name_label"
-            android:labelFor="@+id/last_name"
-            android:text="@string/last_name_label"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_0"
             android:layout_gravity="left"
             android:layout_marginLeft="@dimen/dp_10"
-            android:layout_marginTop="@dimen/dp_20"
-            android:textSize="@dimen/sp_18"
-            android:textColor="@android:color/black"/>
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_weight="0.05"
+            android:labelFor="@+id/last_name"
+            android:text="@string/last_name_label"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/sp_18" />
 
         <EditText
             android:id="@+id/last_name"
-            android:inputType="text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_0"
             android:layout_gravity="left"
             android:layout_marginLeft="@dimen/dp_10"
             android:layout_marginRight="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_5"
-            android:textSize="@dimen/sp_18"
-            android:hint="@string/last_name"
+            android:layout_weight="0.07"
             android:background="@drawable/edit_text_bg"
-            android:padding="@dimen/dp_5"/>
+            android:hint="@string/last_name"
+            android:inputType="text"
+            android:padding="@dimen/dp_5"
+            android:textSize="@dimen/sp_18" />
 
         <TextView
             android:id="@+id/user_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_0"
+            android:layout_gravity="left"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_weight="0.05"
             android:labelFor="@+id/user_name"
             android:text="@string/user_name_label"
             android:textColor="@android:color/black"
-            android:layout_gravity="left"
-            android:layout_marginLeft="@dimen/dp_10"
-            android:layout_marginTop="@dimen/dp_20"
-            android:textSize="@dimen/sp_18"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="@dimen/sp_18" />
 
         <EditText
             android:id="@+id/user_name"
-            android:inputType="text"
-            android:hint="@string/user_name"
-            android:textSize="@dimen/sp_18"
-            android:layout_marginTop="@dimen/dp_5"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0"
             android:layout_gravity="left"
             android:layout_marginLeft="@dimen/dp_10"
             android:layout_marginRight="@dimen/dp_20"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_weight="0.07"
             android:background="@drawable/edit_text_bg"
-            android:padding="@dimen/dp_5" />
+            android:hint="@string/user_name"
+            android:inputType="text"
+            android:padding="@dimen/dp_5"
+            android:textSize="@dimen/sp_18" />
 
         <TextView
             android:id="@+id/email_label"
-            android:labelFor="@+id/email"
-            android:textSize="@dimen/sp_18"
-            android:text="@string/email_label"
-            android:layout_marginTop="@dimen/dp_20"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_0"
             android:layout_gravity="left"
             android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_weight="0.05"
+            android:labelFor="@+id/email"
+            android:text="@string/email_label"
             android:textColor="@android:color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="@dimen/sp_18" />
 
         <EditText
             android:id="@+id/email"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0"
             android:layout_gravity="left"
             android:layout_marginLeft="@dimen/dp_10"
             android:layout_marginRight="@dimen/dp_20"
-            android:background="@drawable/edit_text_bg"
             android:layout_marginTop="@dimen/dp_5"
-            android:padding="@dimen/dp_5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_weight="0.07"
+            android:background="@drawable/edit_text_bg"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:padding="@dimen/dp_5" />
 
         <TextView
             android:id="@+id/password_label"
-            android:text="@string/pass_label"
-            android:textSize="@dimen/sp_18"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_0"
             android:layout_gravity="left"
             android:layout_marginLeft="@dimen/dp_10"
-            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_weight="0.05"
+            android:text="@string/pass_label"
             android:textColor="@android:color/black"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="@dimen/sp_18" />
 
         <EditText
             android:id="@+id/pass"
-            android:inputType="textPassword"
-            android:hint="@string/pass"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0"
             android:layout_gravity="left"
             android:layout_marginLeft="@dimen/dp_10"
             android:layout_marginRight="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_5"
+            android:layout_weight="0.07"
             android:background="@drawable/edit_text_bg"
-            android:padding="@dimen/dp_5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:hint="@string/pass"
+            android:inputType="textPassword"
+            android:padding="@dimen/dp_5" />
 
         <Button
             android:id="@+id/signup"
             android:text="@string/signup"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginBottom="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_20"
             android:background="@color/colorPrimaryDark"
             android:textColor="@android:color/white"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="@dimen/dp_0"
+            android:layout_weight="0.1"/>
+
     </LinearLayout>
 
 </LinearLayout>

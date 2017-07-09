@@ -19,5 +19,6 @@ class UsersContract {
         static final String COLUMN_NAME_USER_NAME = "user_name";
         static final String COLUMN_NAME_EMAIL = "email";
         static final String COLUMN_NAME_PASSWORD = "password";
+        static final String COLUMN_NAME_IMAGE = "image";
     }
 }

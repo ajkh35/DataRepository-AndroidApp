@@ -123,7 +123,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<HomeModel> generateList(){
         ArrayList<HomeModel> list = new ArrayList<>();
 
-        for(int i=1;i<=20;i++){
+        for(int i=1;i<=10;i++){
             list.add(new HomeModel("Title #"+i,"Guy #"+i,i,"ID"));
         }
 

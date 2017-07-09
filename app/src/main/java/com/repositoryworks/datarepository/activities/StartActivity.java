@@ -16,16 +16,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.repositoryworks.datarepository.MainActivity;
 import com.repositoryworks.datarepository.R;
 import com.repositoryworks.datarepository.activityAdapters.DrawerAdapter;
 import com.repositoryworks.datarepository.fragments.GamesFragment;
@@ -33,11 +37,19 @@ import com.repositoryworks.datarepository.fragments.HomeFragment;
 import com.repositoryworks.datarepository.fragments.MoviesFragment;
 import com.repositoryworks.datarepository.fragments.MusicFragment;
 import com.repositoryworks.datarepository.fragments.PlaceHolderFragment;
+import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
+import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
+import com.repositoryworks.datarepository.utils.fileUtils.FileUtilities;
+
+import org.jetbrains.annotations.Contract;
+
+import java.io.IOException;
 
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class StartActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
             MusicFragment.OnFragmentInteractionListener, MoviesFragment.OnFragmentInteractionListener,
@@ -50,7 +62,13 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
     FrameLayout mFrame;
 
     @BindView(R.id.left_drawer)
+    LinearLayout mDrawer;
+
+    @BindView(R.id.drawer_list_view)
     ListView mDrawerList;
+
+    @BindView(R.id.profile_pic)
+    CircleImageView mProfilePic;
 
     @BindArray(R.array.drawer_list)
     String[] mDrawerListItems;
@@ -59,8 +77,15 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
     Toolbar mToolbar;
 
     private TextView mTitle;
-    private static DisplayMetrics mDisplayMetrics = new DisplayMetrics();
+
     public static SharedPreferences sSharedPreferences;
+
+    private UserModel mUser;
+    private DBManager mDBManager;
+
+    private int mFragmentPosition = 0;
+
+    private static final int FILE_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,17 +93,17 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         setContentView(R.layout.activity_start);
         ButterKnife.bind(this);
 
-        // Display width handy
-        getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
-
         // Get SharedPreferences
         sSharedPreferences = getSharedPreferences(Constants.APP_ACTIVITIES,MODE_PRIVATE);
+
+        // Link to database
+        mDBManager = new DBManager(this);
 
         // ActionBar stuff
         setActionBar();
 
         // Load Home Screen content
-        loadFragment(0);
+        loadFragment(mFragmentPosition);
 
         // Initialize the listener object for Open/Close Drawer
         final ActionBarDrawerToggle Toggler = new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar,
@@ -91,6 +116,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
             @Override
             public void onDrawerClosed(View drawerView) {
+                loadFragment(mFragmentPosition);
                 super.onDrawerClosed(drawerView);
             }
         };
@@ -102,10 +128,12 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(((TextView) view).getText().toString().equals(getString(R.string.log_out))){
+                TextView textView = ButterKnife.findById(view,R.id.list_item_text);
+                if(textView.getText().toString().equals(getString(R.string.log_out))){
                     viewAlertDialog();
                 }else{
-                    loadFragment(position);
+                    mFragmentPosition = position;
+                    mDrawerLayout.closeDrawer(mDrawer);
                 }
             }
         });
@@ -115,12 +143,48 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         mDrawerLayout.post(new Runnable() {
             @Override
             public void run() {
-                DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) mDrawerList.getLayoutParams();
-                params.width = (int) (mDisplayMetrics.widthPixels/ 1.3);
-                mDrawerList.setLayoutParams(params);
+                DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) mDrawer.getLayoutParams();
+                params.width = (int) (MainActivity.sDisplayMetrics.widthPixels/ 1.4);
+                mDrawer.setLayoutParams(params);
+                setProfilePic();
                 Toggler.syncState();
             }
         });
+
+        // Set listener for profile pic
+        handleProfilePicClick();
+    }
+
+    /**
+     * Configure the user profile pic
+     */
+    private void setProfilePic(){
+        mDBManager.databaseOpenToRead();
+        mUser = mDBManager.findUserByID(sSharedPreferences.getLong(Constants.CURRENT_USER_ID,-1));
+        if(mUser.getImageBitmap() != null) mProfilePic.setImageBitmap(mUser.getImageBitmap());
+    }
+
+    /**
+     * Handle click on profile picture
+     */
+    private void handleProfilePicClick(){
+
+        mProfilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchFileChooser();
+            }
+        });
+    }
+
+    /**
+     * Show the FileChooser
+     */
+    private void launchFileChooser(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(Intent.createChooser(intent,"Select a file to add"),FILE_REQUEST_CODE);
     }
 
     @Override
@@ -161,7 +225,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
             mDrawerList.setItemChecked(position,true);
             mTitle.setText(mDrawerListItems[position]);
-            mDrawerLayout.closeDrawer(mDrawerList);
+//            mDrawerLayout.closeDrawer(mDrawer);
         }else{
             fragment = new PlaceHolderFragment();
 
@@ -176,7 +240,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                     .replace(R.id.content_frame,fragment)
                     .commit();
             mTitle.setText(getResources().getString(R.string.error_title));
-            mDrawerLayout.closeDrawer(mDrawerList);
+//            mDrawerLayout.closeDrawer(mDrawer);
         }
     }
 
@@ -245,6 +309,63 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         // create and show
         alert.create();
         alert.show();
+    }
+
+    /**
+     * Update the database image for user
+     * @param uri
+     */
+    private void updateDBImage(Uri uri) throws IOException {
+        mDBManager.databaseOpenToWrite();
+        if(mDBManager.updateUserImageByID(FileUtilities.getFilePath(this,uri),
+                sSharedPreferences.getLong(Constants.CURRENT_USER_ID,-1))){
+            setProfilePic();
+            Log.i(Constants.APP_TAG,getString(R.string.log_update_complete));
+        }else{
+            Toast.makeText(this,getString(R.string.no_changes),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case FILE_REQUEST_CODE:
+                if(resultCode == RESULT_OK){
+                    Uri uri = data.getData();
+                    Log.i(Constants.APP_TAG,uri.toString());
+                    String mimeType = getContentResolver().getType(uri);
+
+                    if(mimeType != null){
+                        if(mimeType.equals("image/jpeg") || mimeType.equals("image/png")){
+                            Log.i(Constants.APP_TAG,mimeType);
+                            try {
+                                updateDBImage(uri);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+                            Toast.makeText(this,getString(R.string.select_image_file),Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }else{
+                        Toast.makeText(this,getString(R.string.internal_error),Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }else{
+                    Toast.makeText(this, getString(R.string.file_chooser_error),Toast.LENGTH_SHORT).show();
+                }
+            break;
+
+            default: break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDBManager.databaseClose();
+        super.onDestroy();
     }
 
     @Override

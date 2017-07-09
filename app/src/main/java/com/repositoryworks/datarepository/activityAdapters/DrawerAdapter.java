@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.repositoryworks.datarepository.R;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by ajay3 on 7/4/2017.
  */
@@ -59,7 +61,7 @@ public class DrawerAdapter extends BaseAdapter {
         TextView mText;
 
         ViewHolder(View view){
-            mText = (TextView) view;
+            mText = ButterKnife.findById(view,R.id.list_item_text);
         }
     }
 }

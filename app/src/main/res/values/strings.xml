@@ -21,6 +21,7 @@
         <item>Music</item>
         <item>Movies</item>
         <item>Games</item>
+        <item>Documents</item>
         <item>Settings</item>
         <item>Log Out</item>
     </string-array>
@@ -43,4 +44,24 @@
     <string name="user_name_label">User Name:</string>
     <string name="user_name">User name</string>
     <string name="blank">Can\'t be blank</string>
+    <string name="registering">Registering</string>
+    <string name="user_exists">User Exists</string>
+    <string name="logging_in">Logging in...</string>
+    <string name="wrong_details">Wrong Details</string>
+    <string name="file_chooser_error">Couldn\'t load file</string>
+    <string name="read_permission">Requires Permission to access files</string>
+    <string name="ok">Ok</string>
+    <string name="no_permission">Couldn\'t get Permission</string>
+    <string name="disabled_image">Disabled in accordance</string>
+    <string name="log_has_permission">Has Permissions</string>
+    <string name="log_got_permissions">Got Permissions</string>
+    <string name="log_user_created">User created ID</string>
+    <string name="internal_error">Android Internal Error</string>
+    <string name="select_image_file">Please select an image file(jpeg or png)</string>
+    <string name="image_error">Error while processing Image</string>
+    <string name="no_result">No Results</string>
+    <string name="no_changes">No changes made</string>
+    <string name="log_update_complete">Update complete</string>
+    <string name="select_file">Select an image to add</string>
+    <string name="storage">storage</string>
 </resources>
