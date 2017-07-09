@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -15,7 +16,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +25,6 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +41,6 @@ import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 import com.repositoryworks.datarepository.utils.fileUtils.FileUtilities;
 
-import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 

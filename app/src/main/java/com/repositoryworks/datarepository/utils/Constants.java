@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 
 import com.repositoryworks.datarepository.R;
 
@@ -70,11 +71,10 @@ public class Constants {
      * @return returns the image byte array
      */
     public static byte[] getDefaultImage(Context context){
-        Bitmap bmp = ((BitmapDrawable) context.getResources()
-                .getDrawable(R.drawable.ic_account_circle_48pt_3x)).getBitmap();
+        Bitmap bmp = ((BitmapDrawable) ContextCompat.getDrawable(context,R.drawable.ic_account_circle_white_48dp)).getBitmap();
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 0, stream);
         return stream.toByteArray();
     }
 }

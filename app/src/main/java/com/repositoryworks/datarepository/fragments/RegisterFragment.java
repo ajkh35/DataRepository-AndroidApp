@@ -32,6 +32,7 @@ import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.fileUtils.FileUtilities;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
@@ -54,8 +55,6 @@ public class RegisterFragment extends Fragment {
     private EditText mPassword;
     private CircleImageView mImageChooser;
     private String mImagePath="";
-    private String mStoragePath="";
-    private String mExternalStoragePath="";
     private final int FILE_REQUEST_CODE = 100;
     private final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 4;
 
@@ -108,10 +107,6 @@ public class RegisterFragment extends Fragment {
 
         // Set SharedPreferences
         mPreferences = getActivity().getSharedPreferences(Constants.APP_ACTIVITIES,Context.MODE_PRIVATE);
-
-        // Set storage path variables
-        mStoragePath = Constants.getInternalStoragePath(getContext());
-        mExternalStoragePath = Constants.getExternalStoragePath();
 
         // Set the listeners to views
         mEmail.addTextChangedListener(new TextWatcher() {
@@ -192,7 +187,7 @@ public class RegisterFragment extends Fragment {
                                     saveUserToDatabase();
 
                                     // Go to StartActivity
-                                    Intent intent = new Intent(getActivity(), StartActivity.class);
+                                    Intent intent = new Intent(getActivity(),StartActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);
                                     getActivity().finish();
@@ -354,28 +349,11 @@ public class RegisterFragment extends Fragment {
      * Set the Image Path
      */
     private void setImagePath(Uri uri) throws IOException {
-//        if(uri.getPath().contains(mExternalStoragePath)){
-//            Log.i(Constants.APP_TAG,"External storage path"+mExternalStoragePath);
-//            if(!(mImagePath = FileUtilities.getFilePath(getContext(),uri,mExternalStoragePath))
-//                    .equals(getString(R.string.no_result))){
-//                Log.i(Constants.APP_TAG,mImagePath);
-//            }else{
-//                Toast.makeText(getContext(),getString(R.string.image_error),Toast.LENGTH_SHORT).show();
-//            }
-//        }else{
-//            Log.i(Constants.APP_TAG,"Internal storage path"+mStoragePath);
-//            if(!(mImagePath = FileUtilities.getFilePath(getContext(),uri,mStoragePath)).equals(getString(R.string.no_result))){
-//                Log.i(Constants.APP_TAG,mImagePath);
-//                mImageChooser.setImageBitmap(FileUtilities.getImageBitmap(FileUtilities.getFileBytes(mImagePath)));
-//            }else{
-//                Toast.makeText(getContext(),getString(R.string.image_error),Toast.LENGTH_SHORT).show();
-//            }
-//        }
         if(!(mImagePath = FileUtilities.getFilePath(getContext(),uri))
                 .equals(getString(R.string.no_result))){
 
             Log.i(Constants.APP_TAG,mImagePath);
-            mImageChooser.setImageURI(uri);
+            mImageChooser.setImageBitmap(FileUtilities.getImageBitmap(FileUtilities.getFileBytes(mImagePath)));
         }else{
             mImagePath="";
             Toast.makeText(getContext(),getString(R.string.image_error),Toast.LENGTH_SHORT).show();
@@ -401,7 +379,7 @@ public class RegisterFragment extends Fragment {
                                 e.printStackTrace();
                             }
                         }else{
-                            Toast.makeText(getContext(),getString(R.string.select_image_file), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),getString(R.string.select_image_file),Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -411,8 +389,7 @@ public class RegisterFragment extends Fragment {
                     }
 
                 }else{
-                    Toast.makeText(getContext(),getString(R.string.file_chooser_error),
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),getString(R.string.file_chooser_error),Toast.LENGTH_SHORT).show();
                 }
             break;
 

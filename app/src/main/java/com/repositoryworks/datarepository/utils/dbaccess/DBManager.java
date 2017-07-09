@@ -258,24 +258,18 @@ public class DBManager {
         UserModel model = new UserModel("","","","","","");
 
         String[] projection = {
-                UsersContract.User.COLUMN_NAME_FIRST_NAME,
-                UsersContract.User.COLUMN_NAME_LAST_NAME,
-                UsersContract.User.COLUMN_NAME_USER_NAME,
-                UsersContract.User.COLUMN_NAME_EMAIL,
-                UsersContract.User.COLUMN_NAME_PASSWORD,
-                UsersContract.User.COLUMN_NAME_IMAGE
+                UsersContract.User.COLUMN_NAME_FIRST_NAME, UsersContract.User.COLUMN_NAME_LAST_NAME,
+                UsersContract.User.COLUMN_NAME_USER_NAME, UsersContract.User.COLUMN_NAME_EMAIL,
+                UsersContract.User.COLUMN_NAME_PASSWORD, UsersContract.User.COLUMN_NAME_IMAGE
         };
 
         String selection = UsersContract.User._ID+ " = ?";
         String[] selectionArgs = {String.valueOf(id)};
 
-        Cursor cursor = mDatabase.query(
-                UsersContract.User.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,null,null
-        );
+        Cursor cursor = null;
+        if(id != -1){
+            cursor = mDatabase.query(UsersContract.User.TABLE_NAME,projection,selection,selectionArgs,null,null,null);
+        }
 
         if(cursor != null){
             cursor.moveToFirst();

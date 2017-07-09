@@ -33,8 +33,8 @@ public class FileUtilities {
         BitmapFactory.Options options = new BitmapFactory.Options();
         Bitmap bmp = BitmapFactory.decodeFile(imgPath,options);
         if(bmp != null){
-            bmp = Bitmap.createScaledBitmap(bmp, (int) (MainActivity.sDisplayMetrics.widthPixels/2.5),
-                    (int) (MainActivity.sDisplayMetrics.heightPixels/5.5),true);
+            bmp = Bitmap.createScaledBitmap(bmp,(MainActivity.sDisplayMetrics.widthPixels/3),
+                    (int) (MainActivity.sDisplayMetrics.heightPixels/5.4),true);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -65,11 +65,20 @@ public class FileUtilities {
 
         if(contentUri.getPath().contains(context.getString(R.string.storage))){
             result = contentUri.getPath().split("/file")[1];
+
         }else{
             String[] projection = { MediaStore.Images.Media.DATA };
             String where = MediaStore.Images.Media._ID + " = ?";
-            String id = contentUri.getEncodedPath().replaceFirst("%3A",":");
-            id = id.substring(id.indexOf(':')+1);
+            String id = "";
+
+            if(contentUri.getEncodedPath().contains("%3A")){
+                id = contentUri.getEncodedPath().replaceFirst("%3A",":");
+                id = id.substring(id.indexOf(':')+1);
+            }else{
+                id = contentUri.getPath();
+                id = id.substring(id.lastIndexOf('/')+1);
+            }
+
             String[] whereArgs = {id};
 
             Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

@@ -36,7 +36,6 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
     public static DBManager sDBManager;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
