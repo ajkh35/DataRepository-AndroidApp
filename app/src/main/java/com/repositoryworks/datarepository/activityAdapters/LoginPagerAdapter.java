@@ -8,10 +8,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.repositoryworks.datarepository.R;
+import com.repositoryworks.datarepository.activities.LoginActivity;
 import com.repositoryworks.datarepository.fragments.LoginFragment;
 import com.repositoryworks.datarepository.fragments.PlaceHolderFragment;
 import com.repositoryworks.datarepository.fragments.RegisterFragment;
 import com.repositoryworks.datarepository.utils.Constants;
+import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 
 /**
  * Created by ajay3 on 7/5/2017.

@@ -1,7 +1,6 @@
 package com.repositoryworks.datarepository.fragmentAdapters;
 
 import android.content.Context;
-import android.support.constraint.ConstraintSet;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +14,6 @@ import android.widget.Toast;
 import com.repositoryworks.datarepository.R;
 import com.repositoryworks.datarepository.models.MusicModel;
 import com.repositoryworks.datarepository.utils.Constants;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 

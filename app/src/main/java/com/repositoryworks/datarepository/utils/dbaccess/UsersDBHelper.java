@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 class UsersDBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "DataRepository.db";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + UsersContract.User.TABLE_NAME + " (" +
@@ -20,7 +20,7 @@ class UsersDBHelper extends SQLiteOpenHelper {
                     UsersContract.User.COLUMN_NAME_USER_NAME + " TEXT," +
                     UsersContract.User.COLUMN_NAME_EMAIL + " TEXT," +
                     UsersContract.User.COLUMN_NAME_PASSWORD + " TEXT," +
-                    UsersContract.User.COLUMN_NAME_IMAGE + "BLOB)";
+                    UsersContract.User.COLUMN_NAME_IMAGE + " BLOB);";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + UsersContract.User.TABLE_NAME;

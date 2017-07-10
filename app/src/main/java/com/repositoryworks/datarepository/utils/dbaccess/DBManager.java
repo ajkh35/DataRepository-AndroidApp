@@ -36,7 +36,7 @@ public class DBManager {
 
     /**
      * Open database to write
-     * @throws SQLException
+     * @throws SQLException None
      */
     public void databaseOpenToWrite() throws SQLException{
         mDatabase = mDBHelper.getWritableDatabase();
@@ -44,7 +44,7 @@ public class DBManager {
 
     /**
      * Open database to read
-     * @throws SQLException
+     * @throws SQLException None
      */
     public void databaseOpenToRead() throws SQLException{
         mDatabase = mDBHelper.getReadableDatabase();
@@ -59,7 +59,7 @@ public class DBManager {
 
     /**
      * Create a new record into the database
-     * @param model
+     * @param model UserModel object
      * @return ID of user added
      */
     public long createUser(UserModel model) throws NoSuchAlgorithmException,IOException {
@@ -84,7 +84,7 @@ public class DBManager {
 
     /**
      * Delete a user record by id
-     * @param id
+     * @param id User ID
      * @return ID of user deleted
      */
     public long deleteUserByID(long id){
@@ -103,7 +103,7 @@ public class DBManager {
 
     /**
      * Update user by ID
-     * @param id
+     * @param id User ID
      * @return returns true on success
      */
     public boolean updateUserImageByID(String imgPath,long id) throws IOException {
@@ -136,8 +136,8 @@ public class DBManager {
 
     /**
      * Checks if user exists to prevent SignUp duplicity
-     * @param email
-     * @param user_name
+     * @param email User email
+     * @param user_name User name
      * @return returns the answer to Register screen
      */
     public boolean checkForUser(String email, String user_name){
@@ -175,8 +175,8 @@ public class DBManager {
     /**
      * LOGIN validation to check if details are correct
      *
-     * @param email
-     * @param password
+     * @param email User email
+     * @param password User password
      * @return True if correct details
      */
     public boolean validateUser(String email,String password) throws NoSuchAlgorithmException {
@@ -251,7 +251,7 @@ public class DBManager {
 
     /**
      * Search the database for a user by record ID
-     * @param id
+     * @param id User id
      * @return UserModel of the user
      */
     public UserModel findUserByID(long id){
@@ -289,7 +289,7 @@ public class DBManager {
 
     /**
      * Get the logged in user id
-     * @param email
+     * @param email User email
      * @return returns the ID long value
      */
     public long getUserIDAfterLogin(String email){
@@ -317,7 +317,7 @@ public class DBManager {
 
     /**
      * Method to specify conditional columns
-     * @param filter
+     * @param filter Column filter number
      * @return Column name
      */
     @Contract(pure = true)
@@ -339,9 +339,9 @@ public class DBManager {
     /**
      * Method to get password MD5 hash
      *
-     * @param pass
+     * @param pass String password
      * @return MD5 hash in String data type
-     * @throws NoSuchAlgorithmException
+     * @throws NoSuchAlgorithmException None
      */
     @NonNull
     private String getMD5(String pass) throws NoSuchAlgorithmException {

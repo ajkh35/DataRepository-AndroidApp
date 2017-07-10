@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -201,7 +200,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
     /**
      * Load the fragment chosen from Drawer menu
-     * @param position
+     * @param position FragmentAdapter Item position
      */
     private void loadFragment(int position){
 
@@ -244,7 +243,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
     /**
      * Find the fragment to load when loading for the first time
-     * @param position
+     * @param position Fragment adapter position
      * @return Fragment instance
      */
     @Nullable
@@ -311,7 +310,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
     /**
      * Update the database image for user
-     * @param uri
+     * @param uri Image URI
      */
     private void updateDBImage(Uri uri) throws IOException {
         mDBManager.databaseOpenToWrite();
@@ -358,12 +357,6 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         }
 
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mDBManager.databaseClose();
-        super.onDestroy();
     }
 
     @Override

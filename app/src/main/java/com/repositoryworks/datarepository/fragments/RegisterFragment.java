@@ -29,6 +29,7 @@ import com.repositoryworks.datarepository.activities.LoginActivity;
 import com.repositoryworks.datarepository.activities.StartActivity;
 import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
+import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 import com.repositoryworks.datarepository.utils.fileUtils.FileUtilities;
 
 
@@ -47,6 +48,7 @@ public class RegisterFragment extends Fragment {
     private int FragmentNumber;
     private OnFragmentInteractionListener mListener;
 
+    private DBManager mDBManager;
     private UserModel mUserModel;
     private EditText mUserName;
     private EditText mEmail;
@@ -169,6 +171,9 @@ public class RegisterFragment extends Fragment {
             }
         });
 
+        // Link the database
+        mDBManager = ((LoginActivity) getActivity()).getDBManager();
+
         // SignUp button listeners
         SignUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,7 +188,7 @@ public class RegisterFragment extends Fragment {
                         @Override
                         public void run() {
                             try {
-                                if(checkDatabase(mEmail.getText().toString(), mUserName.getText().toString())){
+                                if(checkDatabase(mEmail.getText().toString(),mUserName.getText().toString())){
                                     saveUserToDatabase();
 
                                     // Go to StartActivity
@@ -193,7 +198,7 @@ public class RegisterFragment extends Fragment {
                                     getActivity().finish();
 
                                 }else{
-                                    // Do Nothing
+                                    Toast.makeText(getContext(),getString(R.string.wrong_details),Toast.LENGTH_SHORT).show();
                                 }
                             } catch (NoSuchAlgorithmException|IOException|ExecutionException|InterruptedException e) {
                                 e.printStackTrace();
@@ -243,7 +248,7 @@ public class RegisterFragment extends Fragment {
 
     /**
      * Validate email field
-     * @param editText
+     * @param editText Form field to edit email
      * @return return true if correct
      */
     private boolean verifyEmail(EditText editText){
@@ -272,7 +277,7 @@ public class RegisterFragment extends Fragment {
 
     /**
      * Validate password field
-     * @param password
+     * @param password User Password
      * @return return true if correct
      */
     private boolean verifyPassword(EditText password){
@@ -292,17 +297,17 @@ public class RegisterFragment extends Fragment {
 
     /**
      * Check the database for sign up form field values
-     * @param email
-     * @param user_name
+     * @param email User Email
+     * @param user_name User Name
      */
     private boolean checkDatabase(final String email,final String user_name)
             throws NoSuchAlgorithmException, IOException, ExecutionException, InterruptedException {
 
-        LoginActivity.sDBManager.databaseOpenToRead();
-        if(LoginActivity.sDBManager.checkForUser(email,user_name)){
+        mDBManager.databaseOpenToRead();
+        if(mDBManager.checkForUser(email,user_name)){
             Toast.makeText(getContext(),getString(R.string.user_exists),Toast.LENGTH_SHORT).show();
-            mUserName.setError("Change UserName");
-            mEmail.setError("Change Email");
+            mUserName.setError(getString(R.string.change_username));
+            mEmail.setError(getString(R.string.change_email));
             return false;
         }else{
             Toast.makeText(getContext(),getString(R.string.registering),Toast.LENGTH_SHORT).show();
@@ -315,13 +320,15 @@ public class RegisterFragment extends Fragment {
     /**
      * Save the user to database
      *
-     * @throws ExecutionException
-     * @throws InterruptedException
+     * @throws ExecutionException None
+     * @throws InterruptedException None
+     * @throws IOException None
+     * @throws NoSuchAlgorithmException None
      */
     private void saveUserToDatabase() throws ExecutionException, InterruptedException, IOException, NoSuchAlgorithmException {
 
-        LoginActivity.sDBManager.databaseOpenToWrite();
-        long id = LoginActivity.sDBManager.createUser(mUserModel);
+        mDBManager.databaseOpenToWrite();
+        long id = mDBManager.createUser(mUserModel);
         Log.i(Constants.APP_TAG,getString(R.string.log_user_created)+String.valueOf(id));
 
         // set shared preferences

@@ -14,18 +14,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.repositoryworks.datarepository.MainActivity;
 import com.repositoryworks.datarepository.R;
 import com.repositoryworks.datarepository.activities.LoginActivity;
 import com.repositoryworks.datarepository.activities.StartActivity;
-import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 
 import org.jetbrains.annotations.Contract;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 
@@ -37,6 +34,8 @@ public class LoginFragment extends Fragment {
 
     private EditText mEmail;
     private EditText mPassword;
+
+    private DBManager mDBManager;
 
     // Set SharedPreferences
     private SharedPreferences mPreferences;
@@ -85,20 +84,21 @@ public class LoginFragment extends Fragment {
         mPreferences = getActivity().getSharedPreferences(Constants.APP_ACTIVITIES,Context.MODE_PRIVATE);
 
         // Link the database
-        LoginActivity.sDBManager.databaseOpenToRead();
+        mDBManager = ((LoginActivity) getActivity()).getDBManager();
+        mDBManager.databaseOpenToRead();
 
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(validateForm()){
                     try {
-                        if(LoginActivity.sDBManager.validateUser(mEmail.getText().toString(),mPassword.getText().toString())){
+                        if(mDBManager.validateUser(mEmail.getText().toString(),mPassword.getText().toString())){
                             Toast.makeText(getContext(),getString(R.string.logging_in),Toast.LENGTH_SHORT).show();
 
                             // set shared preferences
                             mPreferences.edit().putBoolean(Constants.IS_LOGGED_IN,true).apply();
                             mPreferences.edit().putLong(Constants.CURRENT_USER_ID,
-                                    LoginActivity.sDBManager.getUserIDAfterLogin(mEmail.getText().toString())).apply();
+                                    mDBManager.getUserIDAfterLogin(mEmail.getText().toString())).apply();
 
                             // Go to StartActivity
                             Intent intent = new Intent(getActivity(),StartActivity.class);

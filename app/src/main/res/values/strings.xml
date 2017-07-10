@@ -64,4 +64,7 @@
     <string name="log_update_complete">Update complete</string>
     <string name="select_file">Select an image to add</string>
     <string name="storage">storage</string>
+    <string name="already_called">Already got the instance</string>
+    <string name="change_username">Change UserName</string>
+    <string name="change_email">Change Email</string>
 </resources>
