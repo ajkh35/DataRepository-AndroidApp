@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/dp_100"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
@@ -21,24 +21,21 @@
             android:text="@string/email_label"
             android:textColor="@android:color/black"
             android:textSize="@dimen/sp_22"
-            android:layout_weight="0.2"
             android:labelFor="@+id/email"
             android:layout_gravity="center"/>
 
         <EditText
             android:id="@+id/email"
-            android:layout_weight="0.2"
             android:inputType="textEmailAddress"
             android:hint="@string/email"
             android:gravity="start"
-            android:paddingTop="@dimen/dp_5"
-            android:paddingBottom="@dimen/dp_5"
-            android:paddingLeft="@dimen/dp_45"
-            android:paddingRight="@dimen/dp_45"
             android:textSize="@dimen/sp_20"
-            android:layout_width="wrap_content"
+            android:padding="@dimen/dp_5"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginRight="@dimen/dp_10"
             android:background="@drawable/edit_text_bg"
             android:layout_gravity="center"/>
 
@@ -50,21 +47,18 @@
             android:text="@string/pass_label"
             android:textSize="@dimen/sp_22"
             android:textColor="@android:color/black"
-            android:layout_weight="0.2"
             android:layout_marginTop="@dimen/dp_30"
             android:layout_gravity="center"/>
 
         <EditText
             android:id="@+id/pass"
-            android:layout_weight="0.2"
             android:hint="@string/pass"
             android:inputType="textPassword"
             android:textSize="@dimen/sp_20"
-            android:paddingTop="@dimen/dp_5"
-            android:paddingBottom="@dimen/dp_5"
-            android:paddingLeft="@dimen/dp_25"
-            android:paddingRight="@dimen/dp_25"
-            android:layout_width="wrap_content"
+            android:padding="@dimen/dp_5"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_marginRight="@dimen/dp_10"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_10"
             android:background="@drawable/edit_text_bg"
@@ -75,7 +69,6 @@
             android:text="@string/login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/dp_30"
             android:textColor="@android:color/white"

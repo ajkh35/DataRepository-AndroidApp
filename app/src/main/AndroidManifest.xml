@@ -3,6 +3,7 @@
     package="com.repositoryworks.datarepository">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -20,6 +21,9 @@
         </activity>
         <activity android:name=".activities.StartActivity" />
         <activity android:name=".activities.LoginActivity"></activity>
+
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
     </application>
 
 </manifest>

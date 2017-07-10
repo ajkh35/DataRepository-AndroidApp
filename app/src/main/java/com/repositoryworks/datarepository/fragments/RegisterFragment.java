@@ -31,6 +31,7 @@ import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 import com.repositoryworks.datarepository.utils.fileUtils.FileUtilities;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 
 import java.io.File;
@@ -380,11 +381,7 @@ public class RegisterFragment extends Fragment {
                     if(mimeType != null){
                         if(mimeType.equals("image/jpeg") || mimeType.equals("image/png")){
                             Log.i(Constants.APP_TAG,mimeType);
-                            try {
-                                setImagePath(uri);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            CropImage.activity(uri).start(getContext(),this);
                         }else{
                             Toast.makeText(getContext(),getString(R.string.select_image_file),Toast.LENGTH_SHORT).show();
                             return;
@@ -397,6 +394,23 @@ public class RegisterFragment extends Fragment {
 
                 }else{
                     Toast.makeText(getContext(),getString(R.string.file_chooser_error),Toast.LENGTH_SHORT).show();
+                }
+            break;
+
+            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                if(resultCode == LoginActivity.RESULT_OK){
+                    Uri resultUri = result.getUri();
+                    Log.i(Constants.APP_TAG,resultUri.toString());
+                    mImageChooser.setImageURI(resultUri);
+                    mImagePath = resultUri.getPath();
+                }else if(resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
+                    Exception error = result.getError();
+                    try {
+                        throw error;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             break;
 

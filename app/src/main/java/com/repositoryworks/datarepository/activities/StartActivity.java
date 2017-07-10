@@ -39,6 +39,7 @@ import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 import com.repositoryworks.datarepository.utils.fileUtils.FileUtilities;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 
 import java.io.IOException;
@@ -79,10 +80,9 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
     private UserModel mUser;
     private DBManager mDBManager;
+    private static final int FILE_REQUEST_CODE = 100;
 
     private int mFragmentPosition = 0;
-
-    private static final int FILE_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,7 +141,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
             @Override
             public void run() {
                 DrawerLayout.LayoutParams params = (DrawerLayout.LayoutParams) mDrawer.getLayoutParams();
-                params.width = (int) (MainActivity.sDisplayMetrics.widthPixels/ 1.4);
+                params.width = (int) (MainActivity.sDisplayMetrics.widthPixels/ 1.35);
                 mDrawer.setLayoutParams(params);
                 setProfilePic();
                 Toggler.syncState();
@@ -314,8 +314,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
      */
     private void updateDBImage(Uri uri) throws IOException {
         mDBManager.databaseOpenToWrite();
-        if(mDBManager.updateUserImageByID(FileUtilities.getFilePath(this,uri),
-                sSharedPreferences.getLong(Constants.CURRENT_USER_ID,-1))){
+        if(mDBManager.updateUserImageByID(uri.getPath(),sSharedPreferences.getLong(Constants.CURRENT_USER_ID,-1))){
             setProfilePic();
             Log.i(Constants.APP_TAG,getString(R.string.log_update_complete));
         }else{
@@ -335,11 +334,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                     if(mimeType != null){
                         if(mimeType.equals("image/jpeg") || mimeType.equals("image/png")){
                             Log.i(Constants.APP_TAG,mimeType);
-                            try {
-                                updateDBImage(uri);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            CropImage.activity(uri).start(this);
                         }else{
                             Toast.makeText(this,getString(R.string.select_image_file),Toast.LENGTH_SHORT).show();
                             return;
@@ -350,6 +345,26 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                     }
                 }else{
                     Toast.makeText(this, getString(R.string.file_chooser_error),Toast.LENGTH_SHORT).show();
+                }
+            break;
+
+            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                if(resultCode == LoginActivity.RESULT_OK){
+                    Uri resultUri = result.getUri();
+                    Log.i(Constants.APP_TAG,resultUri.toString());
+                    try {
+                        updateDBImage(resultUri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else if(resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
+                    Exception error = result.getError();
+                    try {
+                        throw error;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             break;
 

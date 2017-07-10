@@ -27,4 +27,6 @@
     <dimen name="dp_200">200dp</dimen>
     <dimen name="dp_0">0dp</dimen>
     <dimen name="dp_14">14dp</dimen>
+    <dimen name="dp_180">180dp</dimen>
+    <dimen name="dp_170">170dp</dimen>
 </resources>

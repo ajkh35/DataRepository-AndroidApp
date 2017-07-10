@@ -33,8 +33,8 @@ public class FileUtilities {
         BitmapFactory.Options options = new BitmapFactory.Options();
         Bitmap bmp = BitmapFactory.decodeFile(imgPath,options);
         if(bmp != null){
-            bmp = Bitmap.createScaledBitmap(bmp,(MainActivity.sDisplayMetrics.widthPixels/3),
-                    (int) (MainActivity.sDisplayMetrics.heightPixels/5.4),true);
+            bmp = Bitmap.createScaledBitmap(bmp, (int) (MainActivity.sDisplayMetrics.widthPixels/2.7),
+                    (int) (MainActivity.sDisplayMetrics.heightPixels/5.7),true);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
