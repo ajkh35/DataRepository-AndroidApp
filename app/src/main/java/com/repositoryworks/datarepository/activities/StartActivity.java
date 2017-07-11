@@ -3,11 +3,16 @@ package com.repositoryworks.datarepository.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.WindowCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,10 +25,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +45,6 @@ import com.repositoryworks.datarepository.fragments.PlaceHolderFragment;
 import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
-import com.repositoryworks.datarepository.utils.fileUtils.FileUtilities;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 
@@ -75,6 +81,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
     Toolbar mToolbar;
 
     private TextView mTitle;
+    private RelativeLayout mMyActionBar;
 
     public static SharedPreferences sSharedPreferences;
 
@@ -119,8 +126,9 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         };
 
         // Prepare the List of contents for Drawer
-        DrawerAdapter DrawerAdapter = new DrawerAdapter(this);
-        mDrawerList.setAdapter(DrawerAdapter);
+        DrawerAdapter drawerAdapter = new DrawerAdapter(this);
+        mDrawerList.setAdapter(drawerAdapter);
+        mDrawerList.setSelector(R.drawable.list_background_selector);
         mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
 
             @Override
@@ -130,6 +138,9 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                     viewAlertDialog();
                 }else{
                     mFragmentPosition = position;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        setFragmentColor(position);
+                    }
                     mDrawerLayout.closeDrawer(mDrawer);
                 }
             }
@@ -222,7 +233,6 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
             mDrawerList.setItemChecked(position,true);
             mTitle.setText(mDrawerListItems[position]);
-//            mDrawerLayout.closeDrawer(mDrawer);
         }else{
             fragment = new PlaceHolderFragment();
 
@@ -237,7 +247,12 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                     .replace(R.id.content_frame,fragment)
                     .commit();
             mTitle.setText(getResources().getString(R.string.error_title));
-//            mDrawerLayout.closeDrawer(mDrawer);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+                mDrawer.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+                mMyActionBar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+                mToolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+            }
         }
     }
 
@@ -266,6 +281,44 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
     }
 
     /**
+     * Set the action bar color with fragment change
+     * @param position Fragment Position
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setFragmentColor(int position){
+        switch(mDrawerListItems[position]){
+            case "Home":
+                getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+                mMyActionBar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+                mToolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+                mDrawer.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+                break;
+            case "Music":
+                getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.colorAccent));
+                mMyActionBar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorAccent));
+                mToolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorAccent));
+                mDrawer.setBackgroundColor(ContextCompat.getColor(this,R.color.colorAccent));
+                break;
+            case "Movies":
+                getWindow().setStatusBarColor(Color.MAGENTA);
+                mMyActionBar.setBackgroundColor(Color.MAGENTA);
+                mToolbar.setBackgroundColor(Color.MAGENTA);
+                mDrawer.setBackgroundColor(Color.MAGENTA);
+                break;
+            case "Games":
+                getWindow().setStatusBarColor(Color.RED);
+                mMyActionBar.setBackgroundColor(Color.RED);
+                mToolbar.setBackgroundColor(Color.RED);
+                mDrawer.setBackgroundColor(Color.RED);
+                break;
+            case "Settings":
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
      * Set the action bar contents
      */
     private void setActionBar(){
@@ -279,6 +332,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                 GravityCompat.RELATIVE_HORIZONTAL_GRAVITY_MASK
         ));
         mTitle = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.action_bar_title);
+        mMyActionBar = (RelativeLayout) getSupportActionBar().getCustomView().findViewById(R.id.custom_action_bar);
     }
 
     /**
