@@ -28,7 +28,6 @@ public class MoviesFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment MoviesFragment.
      */
     public static MoviesFragment newInstance(int param1) {

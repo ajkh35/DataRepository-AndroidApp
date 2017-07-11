@@ -67,4 +67,6 @@
     <string name="already_called">Already got the instance</string>
     <string name="change_username">Change UserName</string>
     <string name="change_email">Change Email</string>
+    <string name="click_to_edit">Click to edit</string>
+    <string name="could_not_update">Couldn\'t Update</string>
 </resources>

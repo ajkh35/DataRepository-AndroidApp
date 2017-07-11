@@ -28,7 +28,6 @@ public class GamesFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment GamesFragment.
      */
     public static GamesFragment newInstance(int param1) {
@@ -55,7 +54,6 @@ public class GamesFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_games, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

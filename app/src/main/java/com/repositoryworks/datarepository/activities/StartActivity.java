@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.WindowCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -128,7 +126,6 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         // Prepare the List of contents for Drawer
         DrawerAdapter drawerAdapter = new DrawerAdapter(this);
         mDrawerList.setAdapter(drawerAdapter);
-        mDrawerList.setSelector(R.drawable.list_background_selector);
         mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener(){
 
             @Override
@@ -138,6 +135,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                     viewAlertDialog();
                 }else{
                     mFragmentPosition = position;
+                    mTitle.setText(mDrawerListItems[position]);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         setFragmentColor(position);
                     }
@@ -219,7 +217,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         Fragment fragment;
 
         if((fragment = getSupportFragmentManager().findFragmentByTag(mDrawerListItems[position])) != null){
-            // No content required
+            Log.i(Constants.APP_TAG,fragment.getTag());
         }else{
             fragment = whichFragment(position);
         }
@@ -231,8 +229,6 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                     .addToBackStack(mDrawerListItems[position])
                     .commit();
 
-            mDrawerList.setItemChecked(position,true);
-            mTitle.setText(mDrawerListItems[position]);
         }else{
             fragment = new PlaceHolderFragment();
 
@@ -372,7 +368,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
             setProfilePic();
             Log.i(Constants.APP_TAG,getString(R.string.log_update_complete));
         }else{
-            Toast.makeText(this,getString(R.string.no_changes),Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,getString(R.string.could_not_update),Toast.LENGTH_SHORT).show();
         }
     }
 

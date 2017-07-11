@@ -47,8 +47,8 @@ public class LoginPagerAdapter extends FragmentPagerAdapter {
     /**
      * Get fragment instance by it's position
      *
-     * @param position
-     * @return
+     * @param position FragmentPosition
+     * @return returns new instance of the fragment
      */
     @Nullable
     private Fragment getFragment(int position){

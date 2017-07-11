@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.repositoryworks.datarepository.utils.customViews.CheckableRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    android:background="?android:attr/listChoiceBackgroundIndicator">
 
     <TextView
         android:id="@+id/list_item_text"
@@ -15,4 +16,4 @@
         android:paddingTop="@dimen/dp_14"
         android:paddingBottom="@dimen/dp_14"/>
 
-</RelativeLayout>
+</com.repositoryworks.datarepository.utils.customViews.CheckableRelativeLayout>

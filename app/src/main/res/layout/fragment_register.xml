@@ -12,14 +12,28 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/add_image"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_0"
-            android:layout_marginTop="@dimen/dp_5"
-            android:layout_gravity="center"
-            android:layout_weight="0.3"
-            android:src="@drawable/ic_account_circle_48pt_3x" />
+            android:layout_weight="0.35"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/add_image"
+                android:layout_width="@dimen/dp_140"
+                android:layout_height="@dimen/dp_140"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/dp_minus_5"
+                android:src="@drawable/ic_account_circle_48pt_3x" />
+
+            <TextView
+                android:text="@string/click_to_edit"
+                android:textColor="@android:color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/first_name_label"

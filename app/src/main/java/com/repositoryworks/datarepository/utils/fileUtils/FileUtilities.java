@@ -37,7 +37,7 @@ public class FileUtilities {
                     (int) (MainActivity.sDisplayMetrics.heightPixels/5.7),true);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            bmp.compress(Bitmap.CompressFormat.PNG, 0, stream);
             return stream.toByteArray();
         }else{
             return null;

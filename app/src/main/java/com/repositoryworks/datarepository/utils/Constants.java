@@ -40,7 +40,7 @@ public class Constants {
     public static final String CURRENT_USER_ID = "CurrentUser";
 
     // Application Flow Log Tags
-    public static final String APP_TAG = "APP_TAG";
+    public static final String APP_TAG = "DATA_REPOSITORY";
 
     /**
      * Get SD Card storage path
@@ -74,7 +74,7 @@ public class Constants {
         Bitmap bmp = ((BitmapDrawable) ContextCompat.getDrawable(context,R.drawable.ic_account_circle_white_48dp)).getBitmap();
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 0, stream);
+        bmp.compress(Bitmap.CompressFormat.PNG, 0, stream);
         return stream.toByteArray();
     }
 }
