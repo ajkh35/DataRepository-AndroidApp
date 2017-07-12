@@ -92,13 +92,7 @@ public class DBManager {
         String selection = UsersContract.User._ID + " LIKE ?";
         String[] selectionArgs = {String.valueOf(id)};
 
-        mDatabase.beginTransaction();
-        id = mDatabase.delete(UsersContract.User.TABLE_NAME,selection,selectionArgs);
-
-        mDatabase.setTransactionSuccessful();
-        mDatabase.close();
-
-        return id;
+        return mDatabase.delete(UsersContract.User.TABLE_NAME,selection,selectionArgs);
     }
 
     /**
@@ -121,6 +115,32 @@ public class DBManager {
         }else{}
 
         return count==1;
+    }
+
+    /**
+     * Update the user given the ID
+     * @param user User logged in
+     * @param id ID of the logged in user
+     * @return returns the ID after update
+     */
+    public boolean updateUserByID(UserModel user,long id) throws IOException {
+
+        int count = -1;
+        ContentValues values = new ContentValues();
+
+        if(!user.getProfilePic().isEmpty()){
+            values.put(UsersContract.User.COLUMN_NAME_IMAGE,FileUtilities.getFileBytes(user.getProfilePic()));
+        }
+        values.put(UsersContract.User.COLUMN_NAME_FIRST_NAME,user.getFirstName());
+        values.put(UsersContract.User.COLUMN_NAME_LAST_NAME,user.getLastName());
+        values.put(UsersContract.User.COLUMN_NAME_USER_NAME,user.getUserName());
+
+        String where = UsersContract.User._ID+ " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+
+        count = mDatabase.update(UsersContract.User.TABLE_NAME,values,where,whereArgs);
+
+        return count == 1;
     }
 
     /**
@@ -278,9 +298,14 @@ public class DBManager {
             model.setUserName(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_USER_NAME)));
             model.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_PASSWORD)));
             model.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_EMAIL)));
-            model.setImageBitmap(FileUtilities.getImageBitmap(
-                    cursor.getBlob(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_IMAGE)))
-            );
+            if(cursor.getBlob(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_IMAGE))!= null) {
+                model.setImageBitmap(FileUtilities.getImageBitmap(
+                        cursor.getBlob(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_IMAGE)))
+                );
+            }else{
+                model.setImageBitmap(FileUtilities.getImageBitmap(Constants.getDefaultImage(mContext)));
+            }
+
             cursor.close();
         }
 

@@ -1,10 +1,8 @@
 package com.repositoryworks.datarepository.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 
 import com.repositoryworks.datarepository.R;
@@ -16,9 +14,6 @@ import java.io.ByteArrayOutputStream;
  */
 
 public class Constants {
-
-    // Fragment number key for bundle arguments
-    public static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
 
     // Item type helpers for Adapters
     public static final int ITEM_TYPE_VIEW = 0;
@@ -42,28 +37,8 @@ public class Constants {
     // Application Flow Log Tags
     public static final String APP_TAG = "DATA_REPOSITORY";
 
-    /**
-     * Get SD Card storage path
-     * @return returns the path string
-     */
-    public static String getExternalStoragePath(){
-        String path="";
-        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-            path = Environment.getExternalStorageDirectory().getAbsolutePath();
-        }
-        return path;
-    }
-
-    /**
-     * Get internal storage path
-     * @param context
-     * @return return the path string
-     */
-    public static String getInternalStoragePath(Context context){
-        String path="";
-        path = context.getFilesDir().getAbsolutePath();
-        return path;
-    }
+    // Updating fragment after user details update
+    public static boolean USER_JUST_UPDATED = false;
 
     /**
      * Get default image

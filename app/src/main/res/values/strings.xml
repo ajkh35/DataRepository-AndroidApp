@@ -25,6 +25,13 @@
         <item>Settings</item>
         <item>Log Out</item>
     </string-array>
+    <string-array name="settings_list">
+        <item>Notifications</item>
+        <item>Update Account Details</item>
+        <item>Delete Account</item>
+        <item>About</item>
+        <item>Help</item>
+    </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -69,4 +76,10 @@
     <string name="change_email">Change Email</string>
     <string name="click_to_edit">Click to edit</string>
     <string name="could_not_update">Couldn\'t Update</string>
+    <string name="notification">Notifications</string>
+    <string name="delete_user">Delete Your Account?</string>
+    <string name="update_user">Update</string>
+    <string name="update_success">Updated Successfully</string>
+    <string name="update_failed">Update Failed</string>
+    <string name="settings">Settings</string>
 </resources>

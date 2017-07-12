@@ -4,4 +4,5 @@
     <stroke android:width="@dimen/dp_1" android:color="#000000" />
     <padding android:left="@dimen/dp_2" android:top="@dimen/dp_2"
         android:right="@dimen/dp_2" android:bottom="@dimen/dp_2" />
+    <corners android:radius="@dimen/dp_5" />
 </shape>

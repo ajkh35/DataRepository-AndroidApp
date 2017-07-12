@@ -1,12 +1,14 @@
 package com.repositoryworks.datarepository.models;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by ajay3 on 7/6/2017.
  */
 
-public class UserModel {
+public class UserModel implements Parcelable{
     private String FirstName;
     private String LastName;
     private String UserName;
@@ -24,6 +26,28 @@ public class UserModel {
         this.Password = password;
         this.ProfilePic = profilePic;
     }
+
+    protected UserModel(Parcel in) {
+        FirstName = in.readString();
+        LastName = in.readString();
+        UserName = in.readString();
+        Email = in.readString();
+        Password = in.readString();
+        ProfilePic = in.readString();
+        ImageBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+    }
+
+    public static final Creator<UserModel> CREATOR = new Creator<UserModel>() {
+        @Override
+        public UserModel createFromParcel(Parcel in) {
+            return new UserModel(in);
+        }
+
+        @Override
+        public UserModel[] newArray(int size) {
+            return new UserModel[size];
+        }
+    };
 
     public String getFirstName() {
         return FirstName;
@@ -79,5 +103,21 @@ public class UserModel {
 
     public void setImageBitmap(Bitmap imageBitmap) {
         ImageBitmap = imageBitmap;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(FirstName);
+        dest.writeString(LastName);
+        dest.writeString(UserName);
+        dest.writeString(Email);
+        dest.writeString(Password);
+        dest.writeString(ProfilePic);
+        dest.writeParcelable(ImageBitmap, flags);
     }
 }

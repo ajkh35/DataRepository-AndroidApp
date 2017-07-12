@@ -35,11 +35,13 @@ import android.widget.Toast;
 import com.repositoryworks.datarepository.MainActivity;
 import com.repositoryworks.datarepository.R;
 import com.repositoryworks.datarepository.activityAdapters.DrawerAdapter;
+import com.repositoryworks.datarepository.fragments.DocumentsFragment;
 import com.repositoryworks.datarepository.fragments.GamesFragment;
 import com.repositoryworks.datarepository.fragments.HomeFragment;
 import com.repositoryworks.datarepository.fragments.MoviesFragment;
 import com.repositoryworks.datarepository.fragments.MusicFragment;
 import com.repositoryworks.datarepository.fragments.PlaceHolderFragment;
+import com.repositoryworks.datarepository.fragments.SettingsFragment;
 import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
@@ -55,7 +57,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class StartActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
             MusicFragment.OnFragmentInteractionListener, MoviesFragment.OnFragmentInteractionListener,
-            GamesFragment.OnFragmentInteractionListener, PlaceHolderFragment.OnFragmentInteractionListener {
+            GamesFragment.OnFragmentInteractionListener, PlaceHolderFragment.OnFragmentInteractionListener,
+            DocumentsFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListener {
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -158,22 +161,29 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         });
 
         // Set listener for profile pic
-        handleProfilePicClick();
+        handleProfilePicListeners();
+    }
+
+    /**
+     * Return DBManager instance
+     */
+    public DBManager getDBManager(){
+        return mDBManager;
     }
 
     /**
      * Configure the user profile pic
      */
-    private void setProfilePic(){
+    public void setProfilePic(){
         mDBManager.databaseOpenToRead();
         mUser = mDBManager.findUserByID(sSharedPreferences.getLong(Constants.CURRENT_USER_ID,-1));
-        if(mUser.getImageBitmap() != null) mProfilePic.setImageBitmap(mUser.getImageBitmap());
+        mProfilePic.setImageBitmap(mUser.getImageBitmap());
     }
 
     /**
      * Handle click on profile picture
      */
-    private void handleProfilePicClick(){
+    private void handleProfilePicListeners(){
 
         mProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -218,6 +228,10 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
 
         if((fragment = getSupportFragmentManager().findFragmentByTag(mDrawerListItems[position])) != null){
             Log.i(Constants.APP_TAG,fragment.getTag());
+            if(Constants.USER_JUST_UPDATED && mDrawerListItems[position].equals(getString(R.string.settings))){
+                Constants.USER_JUST_UPDATED = false;
+                fragment = whichFragment(position);
+            }
         }else{
             fragment = whichFragment(position);
         }
@@ -269,8 +283,10 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                 return MoviesFragment.newInstance(position);
             case "Games":
                 return GamesFragment.newInstance(position);
+            case "Documents":
+                return DocumentsFragment.newInstance(position);
             case "Settings":
-                return null;
+                return SettingsFragment.newInstance(position,mUser);
             default:
                 return null;
         }
@@ -306,6 +322,12 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                 mMyActionBar.setBackgroundColor(Color.RED);
                 mToolbar.setBackgroundColor(Color.RED);
                 mDrawer.setBackgroundColor(Color.RED);
+                break;
+            case "Documents":
+                getWindow().setStatusBarColor(Color.BLACK);
+                mMyActionBar.setBackgroundColor(Color.BLACK);
+                mToolbar.setBackgroundColor(Color.BLACK);
+                mDrawer.setBackgroundColor(Color.BLACK);
                 break;
             case "Settings":
                 break;

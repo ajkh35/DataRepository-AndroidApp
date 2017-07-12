@@ -48,6 +48,7 @@
                 android:src="@drawable/ic_account_circle_white_48dp"
                 app:civ_border_width="@dimen/dp_2"
                 app:civ_border_color="@android:color/white" />
+
         </RelativeLayout>
 
         <ListView
@@ -55,7 +56,6 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_0"
             android:layout_weight="0.7"
-            android:layout_marginTop="@dimen/dp_10"
             android:divider="@android:color/transparent"
             android:dividerHeight="@dimen/dp_1"/>
     </LinearLayout>

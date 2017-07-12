@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:padding="@dimen/dp_45"
+    android:alpha="0.94">
+
+    <ImageView
+        android:id="@+id/update_cancel"
+        android:src="@drawable/ic_close_white_36dp"
+        android:layout_gravity="end"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:contentDescription="@android:string/cancel"
+        android:layout_marginTop="@dimen/dp_minus_10"
+        android:layout_marginBottom="@dimen/dp_10"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/update_profile_pic"
+            android:layout_gravity="center"
+            android:layout_width="@dimen/dp_150"
+            android:layout_height="@dimen/dp_150"
+            android:src="@drawable/ic_account_circle_white_48dp"
+            android:layout_marginBottom="@dimen/dp_2"/>
+
+        <TextView
+            android:text="@string/click_to_edit"
+            android:layout_gravity="center"
+            android:textColor="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_20"/>
+
+        <TextView
+            android:id="@+id/update_first_name"
+            android:text="@string/first_name_label"
+            android:labelFor="@+id/edit_first_name"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/dp_10"/>
+
+        <EditText
+            android:id="@+id/edit_first_name"
+            android:hint="@string/first_name"
+            android:textSize="@dimen/sp_18"
+            android:inputType="text"
+            android:textColorHint="@android:color/primary_text_light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:padding="@dimen/dp_2"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_5"/>
+
+        <TextView
+            android:id="@+id/update_last_name"
+            android:text="@string/last_name_label"
+            android:labelFor="@+id/edit_last_name"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"/>
+
+        <EditText
+            android:id="@+id/edit_last_name"
+            android:hint="@string/last_name"
+            android:textSize="@dimen/sp_18"
+            android:inputType="text"
+            android:textColorHint="@android:color/primary_text_light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_5"/>
+
+        <TextView
+            android:id="@+id/update_user_name"
+            android:text="@string/user_name_label"
+            android:labelFor="@+id/edit_user_name"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"/>
+
+        <EditText
+            android:id="@+id/edit_user_name"
+            android:hint="@string/user_name"
+            android:textSize="@dimen/sp_18"
+            android:inputType="text"
+            android:textColorHint="@android:color/primary_text_light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_5"/>
+
+        <Button
+            android:id="@+id/update_user"
+            android:padding="@dimen/dp_2"
+            android:text="@string/update_user"
+            android:textColor="@android:color/black"
+            android:background="@android:color/white"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>
