@@ -30,6 +30,9 @@ import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import org.jetbrains.annotations.Contract;
+
+import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
@@ -423,6 +426,7 @@ public class SettingsFragment extends Fragment {
                     Log.i(Constants.APP_TAG,resultUri.getPath());
                     mProfilePic.setImageURI(resultUri);
                     mUserModel.setProfilePic(resultUri.getPath());
+                    trimCache();
                 }else if(resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
                     Exception error = result.getError();
                     try {
@@ -438,6 +442,45 @@ public class SettingsFragment extends Fragment {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * Trim the cache
+     */
+    public void trimCache() {
+        try {
+            File dir = getContext().getCacheDir();
+            Log.i(Constants.APP_TAG, String.valueOf(dir));
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Delete the directories in cache memory
+     * @param dir Cache directory
+     * @return returns success or failure
+     */
+    @Contract("null -> false")
+    public boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String child : children) {
+                Log.i(Constants.APP_TAG,child +" "+ getString(R.string.deleted));
+                boolean success = deleteDir(new File(dir, child));
+                if (!success) {
+                    return false;
+                }
+            }
+
+        }
+
+        // The directory is now empty so delete it
+        return dir.delete();
     }
 
     public void onButtonPressed(Uri uri) {

@@ -2,14 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.repositoryworks.datarepository.fragments.SettingsFragment">
+    tools:context="com.repositoryworks.datarepository.fragments.SettingsFragment"
+    android:background="@android:color/white">
 
     <ImageView
         android:id="@+id/icon"
         android:src="@mipmap/ic_launcher"
         android:layout_centerHorizontal="true"
-        android:layout_width="@dimen/dp_190"
-        android:layout_height="@dimen/dp_190" />
+        android:layout_width="@dimen/dp_150"
+        android:layout_height="@dimen/dp_150" />
 
     <ListView
         android:id="@+id/settings_list"

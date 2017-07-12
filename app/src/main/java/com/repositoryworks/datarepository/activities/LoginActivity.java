@@ -18,6 +18,10 @@ import com.repositoryworks.datarepository.fragments.PlaceHolderFragment;
 import com.repositoryworks.datarepository.fragments.RegisterFragment;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 
+import org.jetbrains.annotations.Contract;
+
+import java.io.File;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -58,6 +62,51 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
      */
     public DBManager getDBManager(){
         return mDBManager;
+    }
+
+    @Override
+    protected void onDestroy() {
+        trimCache();
+        super.onDestroy();
+    }
+
+    /**
+     * Trim the cache
+     */
+    public void trimCache() {
+        try {
+            File dir = getCacheDir();
+            Log.i(Constants.APP_TAG, String.valueOf(dir));
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Delete the directories in cache memory
+     * @param dir Cache directory
+     * @return returns success or failure
+     */
+    @Contract("null -> false")
+    public boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String child : children) {
+                Log.i(Constants.APP_TAG,child + getString(R.string.deleted));
+                boolean success = deleteDir(new File(dir, child));
+                if (!success) {
+                    return false;
+                }
+            }
+
+        }
+
+        // The directory is now empty so delete it
+        return dir.delete();
     }
 
     @Override

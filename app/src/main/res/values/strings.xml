@@ -93,4 +93,5 @@
     <string name="password_match_error">Password\'s don\'t match</string>
     <string name="password_updated">Password Updated</string>
     <string name="checked">Checked</string>
+    <string name="deleted">deleted</string>
 </resources>
