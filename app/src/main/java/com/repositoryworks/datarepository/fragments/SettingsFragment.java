@@ -7,18 +7,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.repositoryworks.datarepository.R;
@@ -31,6 +31,7 @@ import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -51,7 +52,7 @@ public class SettingsFragment extends Fragment {
     private static final int FILE_REQUEST_CODE = 100;
 
     // Update alert dialog instance variables
-    private Dialog mDialog;
+    private Dialog mUpdateDialog;
     private EditText mFirstName;
     private EditText mLastName;
     private EditText mUserName;
@@ -100,8 +101,7 @@ public class SettingsFragment extends Fragment {
         mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SwitchCompat switchCompat = ButterKnife.findById(parent,R.id.notification_switch);
-                performLayoutClickAction(switchCompat,position);
+                performLayoutClickAction(position);
             }
         });
         return view;
@@ -111,20 +111,10 @@ public class SettingsFragment extends Fragment {
      * Perform click event action
      * @param position Item position
      */
-    private void performLayoutClickAction(SwitchCompat switchCompat,int position){
+    private void performLayoutClickAction(int position){
         switch(position){
             case 0:
                 // Notifications
-                switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isChecked){
-                            Toast.makeText(getContext(),"Checked",Toast.LENGTH_SHORT).show();
-                        } else{
-                            Toast.makeText(getContext(),"Unchecked",Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
                 break;
             case 1:
                 // Update account details
@@ -135,13 +125,19 @@ public class SettingsFragment extends Fragment {
                 viewDeleteAlert();
                 break;
             case 3:
+                // Change Password
+                viewChangePasswordAlert();
+                break;
+            case 4:
                 // About
                 Toast.makeText(getContext(),"Toast about",Toast.LENGTH_SHORT).show();
                 break;
-            case 4:
+            case 5:
                 // Help
                 Toast.makeText(getContext(),"Toast help",Toast.LENGTH_SHORT).show();
                 break;
+
+            default: break;
         }
     }
 
@@ -186,23 +182,23 @@ public class SettingsFragment extends Fragment {
      * Update user details
      */
     private void viewUpdateDialog(){
-        mDialog = new Dialog(getContext(),android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        mUpdateDialog = new Dialog(getContext(),android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.user_update_dialog,null);
-        mDialog.setContentView(view);
+        mUpdateDialog.setContentView(view);
 
-        mFirstName = (EditText) mDialog.findViewById(R.id.edit_first_name);
-        mLastName = (EditText) mDialog.findViewById(R.id.edit_last_name);
-        mUserName = (EditText) mDialog.findViewById(R.id.edit_user_name);
-        ImageView cancel = (ImageView) mDialog.findViewById(R.id.update_cancel);
-        mProfilePic = (CircleImageView) mDialog.findViewById(R.id.update_profile_pic);
-        Button update = (Button) mDialog.findViewById(R.id.update_user);
+        mFirstName = (EditText) mUpdateDialog.findViewById(R.id.edit_first_name);
+        mLastName = (EditText) mUpdateDialog.findViewById(R.id.edit_last_name);
+        mUserName = (EditText) mUpdateDialog.findViewById(R.id.edit_user_name);
+        ImageView cancel = (ImageView) mUpdateDialog.findViewById(R.id.update_cancel);
+        mProfilePic = (CircleImageView) mUpdateDialog.findViewById(R.id.update_profile_pic);
+        Button update = (Button) mUpdateDialog.findViewById(R.id.update_user);
 
         loadUpdateAlertViews(mUserModel);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDialog.dismiss();
+                mUpdateDialog.dismiss();
             }
         });
         mProfilePic.setOnClickListener(new View.OnClickListener() {
@@ -225,10 +221,10 @@ public class SettingsFragment extends Fragment {
                         Log.i(Constants.APP_TAG,getString(R.string.update_success));
                         ((StartActivity) getActivity()).setProfilePic();
                         Constants.USER_JUST_UPDATED = true;
-                        mDialog.dismiss();
+                        mUpdateDialog.dismiss();
                     }else{
                         Toast.makeText(getContext(),getString(R.string.update_failed),Toast.LENGTH_SHORT).show();
-                        mDialog.dismiss();
+                        mUpdateDialog.dismiss();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -236,7 +232,139 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        mDialog.show();
+        mUpdateDialog.show();
+    }
+
+    /**
+     * Get the new password from the user
+     */
+    private void viewNewPasswordDialog(){
+        final Dialog dialog = new Dialog(getContext(),android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog.setTitle(getString(R.string.change_password));
+        dialog.setContentView(R.layout.new_password_dialog);
+
+        final EditText new_password = (EditText) dialog.findViewById(R.id.new_password);
+        final EditText confirm_password = (EditText) dialog.findViewById(R.id.confirm_password);
+        ImageView cancel = (ImageView) dialog.findViewById(R.id.change_password_cancel);
+        Button change_pass = (Button) dialog.findViewById(R.id.change_button);
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        change_pass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(new_password.getText().toString().equals(confirm_password.getText().toString())){
+                    mDBManager.databaseOpenToRead();
+                    try {
+                        if(mDBManager.updatePasswordByID(new_password.getText().toString(),
+                                StartActivity.sSharedPreferences.getLong(Constants.CURRENT_USER_ID,-1))){
+                            Toast.makeText(getContext(),getString(R.string.password_updated),Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        }else{
+                            Toast.makeText(getContext(),getString(R.string.could_not_update),Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    confirm_password.setError(getString(R.string.password_match_error));
+                }
+            }
+        });
+
+        // Create and show
+        dialog.show();
+    }
+
+    /**
+     * Dialog to confirm old password
+     */
+    private void viewPasswordConfirmationDialog(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert.setTitle(getString(R.string.old_password));
+
+        // RelativeLayout for EditText view
+        RelativeLayout layout = new RelativeLayout(getContext());
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        layout.setPadding(60,20,60,0);
+        layout.setLayoutParams(params);
+
+        // EditText password field
+        final EditText pass = new EditText(getContext());
+        pass.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        pass.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.edit_text_bg));
+
+        // Add edit text to RelativeLayout
+        layout.addView(pass);
+
+        alert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String password = pass.getText().toString();
+                if(password.isEmpty()){
+                    pass.setError(getString(R.string.blank));
+                }else{
+                    mDBManager.databaseOpenToRead();
+                    try {
+                        if(mDBManager.validatePassword(password,
+                                StartActivity.sSharedPreferences.getLong(Constants.CURRENT_USER_ID,-1))){
+                            viewNewPasswordDialog();
+                            dialog.dismiss();
+                        }else{
+                            Toast.makeText(getContext(),getString(R.string.wrong_password),Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        alert.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        // Create and show
+        alert.setView(layout);
+        alert.create();
+        alert.show();
+    }
+
+    /**
+     * Display the alert to change password
+     */
+    private void viewChangePasswordAlert(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert.setTitle(getString(R.string.confirmation));
+        alert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                viewPasswordConfirmationDialog();
+                dialog.dismiss();
+            }
+        });
+        alert.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        // Create and show
+        alert.create();
+        alert.show();
     }
 
     /**

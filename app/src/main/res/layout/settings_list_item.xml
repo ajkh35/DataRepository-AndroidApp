@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_70" android:id="@+id/settings_layout">
+    android:layout_height="@dimen/dp_67_5" android:id="@+id/settings_layout">
 
     <TextView
         android:id="@+id/setting_title"
@@ -16,6 +16,7 @@
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/notification_switch"
         android:visibility="gone"
+        android:clickable="false"
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="@dimen/dp_14"
         android:layout_width="@dimen/dp_0"

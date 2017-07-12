@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.repositoryworks.datarepository.R;
 
@@ -48,8 +50,8 @@ public class SettingsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final ViewHolder holder;
         if(convertView == null){
             convertView = LayoutInflater.from(mContext).inflate(R.layout.settings_list_item,parent,false);
             holder = new ViewHolder(convertView);
@@ -61,6 +63,17 @@ public class SettingsAdapter extends BaseAdapter {
         holder.mText.setText(mList[position]);
         if(getItemViewType(position)==NOTIFICATION_VIEW){
             holder.mSwitch.setVisibility(View.VISIBLE);
+            holder.mLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    holder.mSwitch.toggle();
+                    if(!holder.mSwitch.isChecked()){
+                        Toast.makeText(mContext,"UnChecked",Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(mContext,"Checked",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }else{
             holder.mSwitch.setVisibility(View.GONE);
         }

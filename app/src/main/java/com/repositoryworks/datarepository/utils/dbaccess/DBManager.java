@@ -144,6 +144,28 @@ public class DBManager {
     }
 
     /**
+     * Update the password in database
+     * @param new_pass New String password
+     * @param id User ID
+     * @return returns the true/false result update
+     */
+    public boolean updatePasswordByID(String new_pass,long id) throws NoSuchAlgorithmException {
+
+        int count = -1;
+        String new_pass_md5 = getMD5(new_pass);
+
+        ContentValues values = new ContentValues();
+        values.put(UsersContract.User.COLUMN_NAME_PASSWORD,new_pass_md5);
+
+        String where = UsersContract.User._ID+ " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+
+        count = mDatabase.update(UsersContract.User.TABLE_NAME,values,where,whereArgs);
+
+        return count==1;
+    }
+
+    /**
      * Delete all users from the database
      */
     public void deleteAllUsers(){
@@ -228,6 +250,36 @@ public class DBManager {
         }
 
         return isUserValid;
+    }
+
+    /**
+     * Validates the old password
+     * @param password String password
+     * @param id User's ID
+     * @return returns true/false after validation
+     */
+    public boolean validatePassword(String password,long id) throws NoSuchAlgorithmException {
+
+        String pass_md5 = getMD5(password);
+        String db_md5 = "";
+        String[] projection = {UsersContract.User.COLUMN_NAME_PASSWORD};
+        String where = UsersContract.User._ID+ " = ?";
+        String[] whereArgs = {String.valueOf(id)};
+
+        Cursor cursor = mDatabase.query(
+                UsersContract.User.TABLE_NAME,
+                projection,
+                where,whereArgs,
+                null,null,null
+        );
+
+        if(cursor != null){
+            cursor.moveToFirst();
+            db_md5 = cursor.getString(cursor.getColumnIndexOrThrow(UsersContract.User.COLUMN_NAME_PASSWORD));
+            cursor.close();
+        }
+
+        return pass_md5.equals(db_md5);
     }
 
     /**

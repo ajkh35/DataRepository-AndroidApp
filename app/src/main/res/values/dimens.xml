@@ -33,4 +33,10 @@
     <dimen name="dp_minus_5">-5dp</dimen>
     <dimen name="dp_minus_20">-20dp</dimen>
     <dimen name="dp_minus_10">-10dp</dimen>
+    <dimen name="dp_190">190dp</dimen>
+    <dimen name="dp_60">60dp</dimen>
+    <dimen name="dp_65">65dp</dimen>
+    <dimen name="dp_67">67dp</dimen>
+    <dimen name="dp_68">68dp</dimen>
+    <dimen name="dp_67_5">67.5dp</dimen>
 </resources>

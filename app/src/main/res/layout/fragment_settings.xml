@@ -8,8 +8,8 @@
         android:id="@+id/icon"
         android:src="@mipmap/ic_launcher"
         android:layout_centerHorizontal="true"
-        android:layout_width="@dimen/dp_200"
-        android:layout_height="@dimen/dp_200" />
+        android:layout_width="@dimen/dp_190"
+        android:layout_height="@dimen/dp_190" />
 
     <ListView
         android:id="@+id/settings_list"
