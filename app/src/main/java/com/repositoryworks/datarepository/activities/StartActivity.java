@@ -20,15 +20,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +38,9 @@ import com.repositoryworks.datarepository.fragments.HomeFragment;
 import com.repositoryworks.datarepository.fragments.MoviesFragment;
 import com.repositoryworks.datarepository.fragments.MusicFragment;
 import com.repositoryworks.datarepository.fragments.PlaceHolderFragment;
+import com.repositoryworks.datarepository.fragments.SearchFragment;
 import com.repositoryworks.datarepository.fragments.SettingsFragment;
+import com.repositoryworks.datarepository.fragments.dummy.DummyContent;
 import com.repositoryworks.datarepository.models.UserModel;
 import com.repositoryworks.datarepository.utils.Constants;
 import com.repositoryworks.datarepository.utils.dbaccess.DBManager;
@@ -58,7 +57,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class StartActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener,
             MusicFragment.OnFragmentInteractionListener, MoviesFragment.OnFragmentInteractionListener,
             GamesFragment.OnFragmentInteractionListener, PlaceHolderFragment.OnFragmentInteractionListener,
-            DocumentsFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListener {
+            DocumentsFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListener,
+            SearchFragment.OnListFragmentInteractionListener {
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -82,7 +82,9 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
     Toolbar mToolbar;
 
     private TextView mTitle;
-    private RelativeLayout mMyActionBar;
+    private ImageView mSearch;
+    private LinearLayout mMyActionBar;
+    private ActionBarDrawerToggle mToggler;
 
     public static SharedPreferences sSharedPreferences;
 
@@ -111,7 +113,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         loadFragment(mFragmentPosition);
 
         // Initialize the listener object for Open/Close Drawer
-        final ActionBarDrawerToggle Toggler = new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar,
+        mToggler = new ActionBarDrawerToggle(this,mDrawerLayout,mToolbar,
                 R.string.drawer_open,R.string.drawer_close) {
 
             @Override
@@ -135,7 +137,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = ButterKnife.findById(view,R.id.list_item_text);
                 if(textView.getText().toString().equals(getString(R.string.log_out))){
-                    viewAlertDialog();
+                    viewLogOutAlertDialog();
                 }else{
                     mFragmentPosition = position;
                     mTitle.setText(mDrawerListItems[position]);
@@ -148,7 +150,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
         });
 
         // Drawer handling
-        mDrawerLayout.addDrawerListener(Toggler);
+        mDrawerLayout.addDrawerListener(mToggler);
         mDrawerLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -156,7 +158,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                 params.width = (int) (MainActivity.sDisplayMetrics.widthPixels/ 1.35);
                 mDrawer.setLayoutParams(params);
                 setProfilePic();
-                Toggler.syncState();
+                mToggler.syncState();
             }
         });
 
@@ -184,13 +186,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
      * Handle click on profile picture
      */
     private void handleProfilePicListeners(){
-
-        mProfilePic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchFileChooser();
-            }
-        });
+        mProfilePic.setOnClickListener(null);
     }
 
     /**
@@ -198,7 +194,7 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
      */
     private void launchFileChooser(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
+        intent.setType("image/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(Intent.createChooser(intent,"Select a file to add"),FILE_REQUEST_CODE);
     }
@@ -349,14 +345,90 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
                 ActionBar.LayoutParams.MATCH_PARENT,
                 GravityCompat.RELATIVE_HORIZONTAL_GRAVITY_MASK
         ));
+
+        // Bind views
         mTitle = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.action_bar_title);
-        mMyActionBar = (RelativeLayout) getSupportActionBar().getCustomView().findViewById(R.id.custom_action_bar);
+        mSearch = (ImageView) getSupportActionBar().getCustomView().findViewById(R.id.search_icon);
+        mMyActionBar = (LinearLayout) getSupportActionBar().getCustomView().findViewById(R.id.custom_action_bar);
+
+        // Enable listeners
+        mSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Fragment fragment;
+//                if((fragment = getSupportFragmentManager().findFragmentByTag(getString(R.string.search))) != null){
+//                    Log.i(Constants.APP_TAG, String.valueOf(fragment));
+//                }else {
+//                    fragment = SearchFragment.newInstance(2);
+//                }
+//
+//                getSupportFragmentManager().beginTransaction()
+//                        .replace(R.id.content_frame,fragment,getString(R.string.search))
+//                        .addToBackStack(getString(R.string.search))
+//                        .commit();
+//                mTitle.setText(getString(R.string.search));
+//                setSearchActionBar();
+                Toast.makeText(StartActivity.this,getString(R.string.search_for),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * Set the action bar for search
+     */
+    private void setSearchActionBar(){
+        getSupportActionBar().setCustomView(getLayoutInflater().inflate(R.layout.my_search_bar,null),
+                new ActionBar.LayoutParams(
+                        ActionBar.LayoutParams.MATCH_PARENT,
+                        ActionBar.LayoutParams.MATCH_PARENT,
+                        GravityCompat.RELATIVE_HORIZONTAL_GRAVITY_MASK
+                ));
+    }
+
+    /**
+     * Reset the action bar
+     */
+    private void resetActionBar() {
+        getSupportActionBar().setCustomView(getLayoutInflater().inflate(R.layout.my_action_bar,null),
+                new ActionBar.LayoutParams(
+                        ActionBar.LayoutParams.MATCH_PARENT,
+                        ActionBar.LayoutParams.MATCH_PARENT,
+                        GravityCompat.RELATIVE_HORIZONTAL_GRAVITY_MASK
+                )
+        );
+
+        // Bind views
+        mTitle = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.action_bar_title);
+        mSearch = (ImageView) getSupportActionBar().getCustomView().findViewById(R.id.search_icon);
+        mMyActionBar = (LinearLayout) getSupportActionBar().getCustomView().findViewById(R.id.custom_action_bar);
+
+        // Enable listeners
+        mSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment;
+                if((fragment = getSupportFragmentManager().findFragmentByTag(getString(R.string.search))) != null){
+                    Log.i(Constants.APP_TAG, String.valueOf(fragment));
+                }else {
+                    fragment = SearchFragment.newInstance(2);
+                }
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame,fragment,getString(R.string.search))
+                        .addToBackStack(getString(R.string.search))
+                        .commit();
+                mTitle.setText(getString(R.string.search));
+                setSearchActionBar();
+            }
+        });
+
+        mTitle.setText(String.valueOf(getSupportFragmentManager().findFragmentByTag(mDrawerListItems[mFragmentPosition])));
     }
 
     /**
      * Alert Dialog to log out
      */
-    private void viewAlertDialog(){
+    private void viewLogOutAlertDialog(){
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -447,27 +519,11 @@ public class StartActivity extends AppCompatActivity implements HomeFragment.OnF
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
-            case R.id.about:
-                Toast.makeText(this,"About",Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.help:
-                Toast.makeText(this,"Help",Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public void onFragmentInteraction(Uri uri) {
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
     }
 }

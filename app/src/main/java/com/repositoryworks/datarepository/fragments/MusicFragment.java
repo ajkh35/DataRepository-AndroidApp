@@ -19,9 +19,7 @@ import butterknife.ButterKnife;
 public class MusicFragment extends Fragment {
 
     private static final String FRAGMENT_NUMBER = "FRAGMENT_NUMBER";
-
     private int FragmentNumber;
-
     private OnFragmentInteractionListener mListener;
 
     private MusicAdapter mAdapter;

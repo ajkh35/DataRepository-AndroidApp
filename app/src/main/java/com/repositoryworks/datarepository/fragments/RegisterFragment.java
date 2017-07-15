@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -57,6 +56,8 @@ public class RegisterFragment extends Fragment {
     private EditText mLastName;
     private EditText mPassword;
     private CircleImageView mImageChooser;
+//    private String[] mChooserList;
+//    private ArrayAdapter<String> mChooserAdapter;
     private String mImagePath="";
     private final int FILE_REQUEST_CODE = 100;
     private final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 4;
@@ -107,6 +108,9 @@ public class RegisterFragment extends Fragment {
         mEmail = ButterKnife.findById(view,R.id.email);
         mPassword = ButterKnife.findById(view,R.id.pass);
         mImageChooser = ButterKnife.findById(view,R.id.add_image);
+//        mChooserList = getResources().getStringArray(R.array.chooser_list);
+//        mChooserAdapter = new ArrayAdapter<>(getContext(),
+//                android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.chooser_list));
 
         // Set SharedPreferences
         mPreferences = getActivity().getSharedPreferences(Constants.APP_ACTIVITIES,Context.MODE_PRIVATE);
@@ -348,9 +352,38 @@ public class RegisterFragment extends Fragment {
      */
     private void launchFileChooser(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
+        intent.setType("image/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(Intent.createChooser(intent,getString(R.string.select_file)),FILE_REQUEST_CODE);
+//        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+//        dialog.setTitle(getString(R.string.from_where));
+//        dialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//        dialog.setAdapter(mChooserAdapter, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                switch (which){
+//                    case 0:
+//
+//                    break;
+//
+//                    case 1:
+//                        break;
+//
+//                    case 2:
+//                        break;
+//                    default: break;
+//                }
+//            }
+//        });
+//
+//        // Create and show
+//        dialog.create();
+//        dialog.show();
     }
 
     /**
